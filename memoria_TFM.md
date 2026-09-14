@@ -128,11 +128,11 @@ La restricción geográfica responde a que los tres mercados no son directamente
 comparables entre sí, de modo que un modelo conjunto describiría de forma
 imprecisa cada uno de ellos, y a que Madrid presenta la mayor granularidad
 espacial disponible, con 135 unidades de barrio frente a 69 y 73 de las otras
-dos ciudades. Barcelona y Valencia se reservan como conjunto de validación
-externa, con el fin de evaluar hasta qué punto un modelo calibrado sobre un
-mercado resulta aplicable a otro distinto, cuestión de interés directo para
-cualquier entidad que plantee el despliegue de un modelo de valoración fuera de
-su ámbito de calibración.
+dos ciudades. Se añade un motivo técnico: las tres ciudades se sitúan en husos
+UTM distintos —Barcelona en el 31 Norte frente al 30 Norte de Madrid y
+Valencia—, de modo que un tratamiento conjunto obligaría a proyectar alguna de
+ellas fuera de su huso y degradaría la precisión de las distancias sobre las que
+se apoya el enriquecimiento geoespacial del apartado 4.
 
 La restricción temporal se justifica en el apartado 3.3, por derivarse del
 análisis de la estructura del conjunto. El trimestre seleccionado es el de mayor

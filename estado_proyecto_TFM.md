@@ -88,7 +88,7 @@ ningún notebook: son redacción.
 - **Ruta base:** `/content/drive/MyDrive/Master Data Science/TFM_AVM`
   (declarada siempre en la constante `BASE`; nunca escribir rutas completas a
   mano). Los notebooks residen directamente en esa carpeta.
-- **Estructura de carpetas:** `data/raw`, `data/processed`, `outputs/figuras`,
+- **Estructura de carpetas:** `data/raw`, `data/processed`, `figuras`,
   `modelos`.
 - **Patrón de trabajo:** copiar de Drive a `/content/` al empezar la sesión y
   trabajar en local. La copia se hace con `shutil`, no con comandos de shell, lo
@@ -818,9 +818,9 @@ separado.
 
 **Lectura para la memoria:** el enriquecimiento geoespacial aporta 4,38 pp por sí
 solo, no 0,66. Y es la vía **portable**: un modelo de vivienda + distancias da
-18,03% partiendo solo de coordenadas, sin depender de zonificación
-administrativa. Eso importa para la validación externa sobre Barcelona y
-Valencia, que no puede usar los distritos de Madrid.
+18,03% partiendo solo de coordenadas. Las variables construidas no dependen de
+una zonificación administrativa concreta, lo que las hace trasladables a otro
+mercado sin rehacer la especificación.
 
 ### Evaluación (CV sobre entrenamiento)
 
