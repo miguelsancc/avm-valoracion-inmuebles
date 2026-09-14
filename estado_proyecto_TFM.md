@@ -232,13 +232,13 @@ los baños, con una dispersión de precio del 4,3% en mediana.
 
 Ningún `ASSETID` figura en más de un trimestre, pese a que la documentación
 afirma lo contrario. Un identificador alternativo por atributos confirma que
-**sí existen republicaciones**: los pares en trimestres consecutivos aparecen
-con frecuencia 1,8 veces superior a la esperada por azar (χ² = 769; p < 10⁻¹⁵⁰).
+**sí existen republicaciones**: 2.323 huellas figuran en más de un trimestre,
+volumen que el 4,79% de falsos positivos del procedimiento no explica.
 
-El procedimiento de detección tiene una tasa de falsos positivos del 4,79%, y
-solo en torno al 50% de las coincidencias entre trimestres son republicaciones
-efectivas. Insuficiente para fundamentar una deduplicación. De ahí la
-restricción a un único trimestre.
+Ese mismo 4,79% impide ir más lejos: no hay forma de señalar cuáles de las 2.323
+coincidencias son republicaciones efectivas y cuáles viviendas distintas
+indistinguibles entre sí. Insuficiente para fundamentar una deduplicación. De
+ahí la restricción a un único trimestre.
 
 ### Perturbación de coordenadas fila a fila
 

@@ -371,20 +371,17 @@ identificador figura en más de un trimestre, pese a que la documentación
 establece que un inmueble no vendido reaparece en periodos posteriores. Para
 contrastar ambas afirmaciones se construyó un identificador alternativo basado
 en los atributos que no varían al renovarse un anuncio. El contraste confirmó la
-existencia de reapariciones: la distancia temporal entre registros coincidentes
-decrece de forma monótona respecto a lo esperable por azar, con los pares
-situados en trimestres consecutivos apareciendo con una frecuencia 1,8 veces
-superior a la esperada y los correspondientes a los extremos del ejercicio a un
-tercio de ella. Ninguna explicación basada en inmuebles distintos genera ese
-patrón. El identificador publicado no permite, en consecuencia, el seguimiento
-temporal de una vivienda.
+existencia de reapariciones: 2.323 de esas huellas figuran en más de un
+trimestre, volumen que la tasa de error del procedimiento no alcanza a explicar.
+El identificador publicado no permite, en consecuencia, el seguimiento temporal
+de una vivienda.
 
-El procedimiento de detección basado en atributos presenta, sin embargo, una
-tasa medida de coincidencias entre inmuebles distintos del 4,79%, y se estima
-que únicamente en torno a la mitad de las coincidencias entre trimestres
-corresponde a reapariciones efectivas. Fundamentar sobre él la depuración del
-conjunto habría supuesto eliminar inmuebles distintos y conservar duplicados en
-proporciones similares.
+El procedimiento presenta, sin embargo, una tasa medida de coincidencias entre
+inmuebles distintos del 4,79%, y no permite determinar cuáles de las 2.323
+coincidencias corresponden a reapariciones efectivas y cuáles a viviendas
+distintas pero indistinguibles en los atributos disponibles. Fundamentar sobre
+él la depuración del conjunto habría supuesto eliminar inmuebles distintos y
+conservar duplicados.
 
 Se optó por restringir el ámbito a una única captura trimestral, en la que el
 identificador está verificado y la depuración se apoya en evidencia directa. El
