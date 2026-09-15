@@ -909,7 +909,7 @@ El modelo de alto rendimiento admite dos lecturas distintas de la importancia de
 sus variables, y ambas se practican porque responden a preguntas distintas. La
 primera reparte cada valoración entre las características del inmueble mediante
 valores SHAP: descompone la diferencia entre la predicción y un valor de
-referencia común —292.754 euros, el valor esperado del modelo— en una suma exacta
+referencia común —292.737 euros, el valor esperado del modelo— en una suma exacta
 de contribuciones. La segunda mide de qué información no puede prescindir el
 modelo para acertar, inutilizando cada variable por separado y registrando el
 deterioro del error relativo mediano sobre el conjunto de validación.
@@ -922,34 +922,34 @@ valoraciones en variables de las que en realidad podría prescindir, y en tal ca
 sus explicaciones no resistirían una auditoría.
 
 **El modelo supera ese contraste.** Sobre las treinta y cinco variables, la
-correlación de rangos entre ambos órdenes alcanza 0,957: las que sostienen las
+correlación de rangos entre ambos órdenes alcanza 0,964: las que sostienen las
 valoraciones son las mismas de las que depende la precisión. Las discrepancias se
 concentran en el aire acondicionado y la calidad constructiva, que descienden
-siete y cinco posiciones respectivamente al medirlas por su aportación al
+siete y cuatro posiciones respectivamente al medirlas por su aportación al
 acierto, y en el jardín, cuyo efecto sobre el error resulta indistinguible de
 cero. En los tres casos la información está disponible por otras vías —el tipo de
 obra, el año de construcción, el distrito—, de modo que el modelo la recupera
 cuando se le priva de la variable.
 
 La superficie construida domina ambas medidas: concentra el 31,1% de la
-atribución y su pérdida degrada el error en 22,7 puntos porcentuales. El
+atribución y su pérdida degrada el error en 22,8 puntos porcentuales. El
 resultado es esperable en valoración inmobiliaria y su ausencia habría sido
 motivo de revisión.
 
 | Bloque de información | Atribución | Deterioro del error | Variables |
 |---|---|---|---|
-| Características de la vivienda | 56,1% | 30,8 pp | 23 |
-| Geoespacial | 34,9% | 21,1 pp | 7 |
-| Distrito | 4,8% | 3,0 pp | 1 |
-| Catastro | 4,2% | 1,6 pp | 4 |
+| Características de la vivienda | 56,0% | 31,6 pp | 23 |
+| Geoespacial | 34,9% | 21,6 pp | 7 |
+| Distrito | 4,8% | 3,2 pp | 1 |
+| Catastro | 4,3% | 2,0 pp | 4 |
 
 El hallazgo relevante está en el bloque de localización. Las siete variables
-geoespaciales reúnen el 34,9% de la atribución y 21,1 puntos de deterioro, frente
-a los 3,0 puntos del distrito. Dentro de ese bloque, las cuatro variables
+geoespaciales reúnen el 34,9% de la atribución y 21,6 puntos de deterioro, frente
+a los 3,2 puntos del distrito. Dentro de ese bloque, las cuatro variables
 construidas en el apartado 4 —superficie y antigüedad medias del barrio,
 estaciones de metro en un kilómetro y densidad de oferta en quinientos metros—
-aportan 12,7 puntos, por encima de los 8,4 de las distancias disponibles en
-origen y más de cuatro veces lo que aporta la zonificación administrativa. El
+aportan 13,0 puntos, por encima de los 8,6 de las distancias disponibles en
+origen y cuatro veces lo que aporta la zonificación administrativa. El
 enriquecimiento geoespacial no constituye por tanto un complemento del modelo
 sino su segundo componente explicativo, y lo es además por una vía portable: se
 obtiene a partir de coordenadas, sin depender de una división administrativa
@@ -980,32 +980,38 @@ reproducen exactamente la valoración obtenida. Esa lectura es la que acompaña 
 una valoración remitida a un comité de riesgos y la que sostiene la pantalla de
 explicación de la aplicación descrita en el apartado 10.
 
-Se examinan dos casos, seleccionados mediante criterios calculados sobre el
+Se examinan tres casos, seleccionados mediante criterios calculados sobre el
 conjunto de validación y no por elección discrecional: una vivienda de precio
-próximo a la mediana dentro del rango operativo, y la situada en el percentil 99
-del cociente entre valoración y precio anunciado.
+próximo a la mediana dentro del rango operativo, y las situadas en los
+percentiles 99 y 1 del cociente entre valoración y precio anunciado.
 
 **El primer caso documenta el funcionamiento ordinario.** Un piso de 55 metros
-cuadrados en Adelfas parte del valor de referencia de 292.754 euros y se
-descuentan 84.484 por una superficie inferior a la típica del conjunto. El modelo
-recupera a continuación 34.065 euros porque Adelfas es un barrio de viviendas
+cuadrados en Adelfas parte del valor de referencia de 292.737 euros y se
+descuentan 84.228 por una superficie inferior a la típica del conjunto. El modelo
+recupera a continuación 33.700 euros porque Adelfas es un barrio de viviendas
 pequeñas, en el que 55 metros cuadrados no constituyen una vivienda reducida. Esa
 corrección —penalizar por tamaño y compensar según el contexto del barrio— es una
 interacción entre dos variables que un modelo aditivo no puede representar, y
 aparece en el primer caso examinado sin haberla buscado. La valoración cierra en
-261.828 euros frente a los 268.000 anunciados.
+256.775 euros frente a los 268.000 anunciados.
 
 **El segundo caso ilustra el uso de la explicación como instrumento de
-contraste.** El modelo valora en 288.295 euros una vivienda de 75 metros
-cuadrados en el barrio de Colina anunciada en 161.000, con una discrepancia del
-79%. La descomposición no revela ninguna atribución anómala: el reparto penaliza
-correctamente la superficie y la ausencia de ascensor, y añade valor por el
-contexto del barrio, el distrito, la piscina y el garaje. El contraste con el
-entorno confirma la lectura: la vivienda se anuncia a 2.147 euros por metro
-cuadrado en un barrio cuya mediana se sitúa en 3.787, y el conjunto de las
-viviendas de Colina presenta un cociente mediano de 0,993 y un error del 6,5%,
-inferior al del conjunto. La discrepancia no procede por tanto de la valoración
-sino del precio anunciado.
+contraste.** El modelo valora en 556.230 euros una vivienda de 115 metros
+cuadrados en el barrio de Gaztambide anunciada en 312.000, con una discrepancia
+del 78%. La descomposición no revela ninguna atribución anómala: las
+contribuciones se reparten entre la superficie, el tipo de producto del barrio y
+la proximidad al centro en magnitudes acordes con las estimadas para el resto del
+conjunto. El comportamiento del modelo en el entorno confirma la lectura: el
+barrio presenta un cociente mediano de 1,005 y un error del 7,48%, por debajo del
+8,77% del conjunto, de modo que la valoración no resulta allí menos fiable que en
+cualquier otra zona. Y la vivienda se anuncia a 2.713 euros por metro cuadrado en
+un barrio cuya mediana se sitúa en 4.781, un 43% por debajo. La discrepancia no
+procede por tanto de la valoración sino del precio anunciado.
+
+El tercer caso examinado invierte el signo sin alterar la lectura: una vivienda
+de Chueca-Justicia anunciada a 8.622 euros por metro cuadrado, en un barrio cuya
+mediana se sitúa en 6.114, recibe una valoración un 36% inferior al precio
+pedido, y el reparto vuelve a señalar el anuncio antes que al modelo.
 
 Ahí reside la utilidad de la explicación individual para el caso de negocio. Un
 modelo que emite únicamente una cifra no permite contrastar tasaciones recibidas:
@@ -1035,7 +1041,7 @@ mismo y resulta por ello directamente comparable.
 
 **Las dos explicaciones concuerdan.** Sobre los dieciocho atributos binarios
 comparables, el signo coincide en el 94% de los casos y la correlación entre
-ambas estimaciones alcanza 0,870. La explicación obtenida a posteriori sobre un
+ambas estimaciones alcanza 0,871. La explicación obtenida a posteriori sobre un
 modelo opaco recupera por tanto lo que un modelo transparente afirma, que es el
 único aval empírico disponible de que describe el comportamiento del modelo y no
 un artefacto del procedimiento que la genera. La comprobación no es prescindible:
@@ -1106,10 +1112,10 @@ solo varía en magnitud sino que invierte su signo. Su valor no es absoluto sino
 relativo a la altura del edificio: una tercera planta es la posición superior en
 un edificio de tres alturas y una posición baja en uno de doce. El modelo de
 árboles representa esa dependencia y asigna a la planta contribuciones que van
-desde el −1,52% en posiciones intermedias de edificios bajos hasta el +5,50% en
+desde el −1,49% en posiciones intermedias de edificios bajos hasta el +5,38% en
 últimas plantas de edificios de nueve alturas o más. El modelo interpretable
 estima para ese conjunto de comportamientos un parámetro único de +0,63%,
-estadísticamente indistinguible de cero. Los 5,28 puntos de diferencia entre
+estadísticamente indistinguible de cero. Los 5,34 puntos de diferencia entre
 ambos modelos son la suma de decenas de restricciones de esa naturaleza.
 
 El examen permite además corregir un diagnóstico formulado en el apartado 6.2. La
@@ -1122,7 +1128,7 @@ y más simple: únicamente el 24,3% de las viviendas que lo declaran presentan u
 planta coincidente con la altura catastral del edificio.
 
 **La cuestión relevante no es cuál de los dos modelos es mejor sino qué se pierde
-al renunciar a cada uno.** Renunciar al modelo de alto rendimiento cuesta 5,28
+al renunciar a cada uno.** Renunciar al modelo de alto rendimiento cuesta 5,34
 puntos de error, 18,0 puntos de valoraciones dentro del margen del diez por
 ciento y un coeficiente de dispersión que no alcanza el estándar. Renunciar al
 modelo interpretable cuesta la inferencia estadística y obliga a construir la
@@ -1186,26 +1192,26 @@ casi nueve entre los extremos, dispersión que otorga contenido al contraste.
 
 | Quintil de renta | Renta mediana | Precio mediano | Valoración / precio | Error mediano |
 |---|---|---|---|---|
-| 1 | 9.461 € | 136.000 € | 1,014 | 9,01% |
-| 2 | 12.246 € | 184.000 € | 0,997 | 9,46% |
-| 3 | 16.328 € | 284.000 € | 0,994 | 8,37% |
-| 4 | 20.562 € | 413.000 € | 0,995 | 8,32% |
-| 5 | 28.291 € | 682.000 € | 0,993 | 8,86% |
+| 1 | 9.461 € | 136.000 € | 1,010 | 9,07% |
+| 2 | 12.246 € | 184.000 € | 0,996 | 9,30% |
+| 3 | 16.328 € | 284.000 € | 0,993 | 8,43% |
+| 4 | 20.562 € | 413.000 € | 0,996 | 8,35% |
+| 5 | 28.291 € | 682.000 € | 0,994 | 9,04% |
 
-El cociente entre valoración y precio observado se mantiene entre 0,993 y 1,014,
-y el error relativo mediano entre el 8,3% y el 9,5%. La diferencia de error entre
-los quintiles extremos es de 0,15 puntos porcentuales. El modelo no valora con
+El cociente entre valoración y precio observado se mantiene entre 0,993 y 1,010,
+y el error relativo mediano entre el 8,3% y el 9,3%. La diferencia de error entre
+los quintiles extremos es de 0,03 puntos porcentuales. El modelo no valora con
 menor precisión en los barrios de renta baja.
 
-El único desvío apreciable es una sobrevaloración del 1,4% en el quintil de renta
+El único desvío apreciable es una sobrevaloración del 1,0% en el quintil de renta
 inferior. Su origen es en buena medida mecánico: todo modelo de regresión
 comprime sus predicciones hacia el valor central, de modo que sobrevalorar en el
 extremo inferior de la distribución constituye un resultado esperado y no un
 hallazgo.
 
 **La comparación lo confirma.** Calculados los mismos indicadores agrupando por
-quintiles de precio en lugar de renta, el recorrido del cociente asciende a 0,081
-frente a los 0,021 que se obtienen por renta. El sesgo opera sobre el precio, que
+quintiles de precio en lugar de renta, el recorrido del cociente asciende a 0,078
+frente a los 0,017 que se obtienen por renta, esto es, apenas la quinta parte. El sesgo opera sobre el precio, que
 es la magnitud sobre la que actúa la compresión, y se diluye al ordenar por una
 variable distinta. Renta y precio están asociados —el precio mediano del quintil
 superior quintuplica el del inferior— pero no coinciden: existen viviendas
@@ -1215,7 +1221,7 @@ esa falta de coincidencia es la que permite separar ambos efectos.
 Procede señalar no obstante que el signo del desvío residual es el desfavorable
 para el uso previsto. La sobrevaloración se concentra donde una garantía
 sobrevalorada tiene peor efecto sobre la pérdida esperada. Su magnitud es pequeña
-—unos 1.900 euros sobre la vivienda mediana de ese tramo— y no justifica corregir
+—unos 1.360 euros sobre la vivienda mediana de ese tramo— y no justifica corregir
 el modelo, pero sí incorporar el seguimiento de este indicador al control
 periódico del procedimiento.
 

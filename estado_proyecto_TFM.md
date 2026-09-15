@@ -978,7 +978,7 @@ procedimiento y curva de error por decil para ambos modelos. Sin línea de umbra
 redundante con las barras.
 
 **Material para el apartado 8 (trade-off).** El coste de la interpretabilidad
-está cuantificado: **5,28 pp de MdAPE, 18,0 pp de PE10**, y un COD que no alcanza
+está cuantificado: **5,34 pp de MdAPE, 18,2 pp de PE10**, y un COD que no alcanza
 el estándar.
 
 > **Corrección del diagnóstico de `ISINTOPFLOOR` (notebook 03, bloque 4).** Se
