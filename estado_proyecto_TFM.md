@@ -923,23 +923,37 @@ minutos.
 | Superficie × distrito | 17,76% | 30,1% | 54,9% | 1,0099 | 22,85 |
 | Superficie × barrio | 14,75% | 35,4% | 63,2% | 1,0005 | 19,89 |
 | Modelo lineal (OLS) | 14,11% | 37,1% | 66,0% | 0,9890 | 19,32 |
-| **XGBoost** | **8,83%** | **55,1%** | **82,2%** | 0,9974 | **12,91** |
+| **XGBoost** | **8,77%** | **55,3%** | **82,2%** | 0,9974 | **12,93** |
 
-**Resultado central:** XGBoost reduce el error de la referencia un 40,1%; el
-lineal, un 4,3%. Sobre la vivienda mediana (268.000 €), de 39.530 € a 23.664 € de
+**Resultado central:** XGBoost reduce el error de la referencia un 40,5%; el
+lineal, un 4,3%. Sobre la vivienda mediana (268.000 €), de 39.530 € a 23.504 € de
 desviación.
 
-> **Corrección aplicada (notebook 03).** El control de coherencia del bloque 0
-> detectó que las cifras documentadas no coincidían con el artefacto. Las válidas
-> son las de esta tabla: 8,83% de MdAPE, 55,1% de PE10 y COD de 12,91. Quedan sin
-> validez el 8,77% / 55,3% / 12,93 anotados antes, y el 8,66% de la síntesis del
-> bloque 8, anterior a la unificación de semilla. **La fuente de verdad es
-> `avm_madrid.joblib`.** La diferencia entre ambos modelos no responde a la información
-disponible, que es idéntica, sino a la capacidad de combinarla sin restricción
-aditiva.
+> **Deriva no determinista de XGBoost, localizada y corregida.** El control de
+> coherencia del notebook 03 detectó que las cifras documentadas no coincidían
+> con el artefacto, y se concluyó que unas eran válidas y otras caducadas. Era
+> una lectura equivocada: **ambas series procedían del mismo código con la misma
+> semilla**, ejecutado en sesiones distintas. El estimador se instanciaba con
+> `n_jobs=-1` y `tree_method="hist"`, y el orden de reducción de los histogramas
+> depende del número de hilos, que varía con la máquina que asigne Colab.
+>
+> Las dos series observadas fueron 8,83 / 55,1 / 12,91 / 0,9987 y
+> 8,77 / 55,3 / 12,93 / 0,9974. El modelo lineal, determinista, reprodujo todas
+> sus cifras en las dos ocasiones. Se fija `N_HILOS = 4` en las dos
+> instanciaciones del `XGBRegressor`; los `n_jobs=-1` de la validación cruzada y
+> de la búsqueda se conservan, por repartir pliegues sin alterar el resultado.
+>
+> La serie vigente es la de esta tabla. **Pendiente de confirmar con una segunda
+> ejecución bajo `N_HILOS = 4`:** los agregados se han reproducido, pero las
+> cifras por quintil de superficie se movieron hasta 0,003 en el ratio y 0,18 pp
+> en el error, de modo que la estabilidad a nivel de segmento no está acreditada
+> todavía.
+
+La diferencia entre ambos modelos no responde a la información disponible, que es
+idéntica, sino a la capacidad de combinarla sin restricción aditiva.
 
 **Generalización verificada:** CV → test da 14,04 → 14,11 (lineal) y
-8,97 → 8,83 (XGBoost).
+8,97 → 8,77 (XGBoost).
 
 **COD:** XGBoost es el único procedimiento por debajo del umbral IAAO de 15.
 
