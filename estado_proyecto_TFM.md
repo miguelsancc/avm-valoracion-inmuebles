@@ -989,12 +989,13 @@ el estándar.
 > bajos son periféricos y baratos. Condicionando por altura, la última planta es
 > más cara en los cuatro tramos.
 >
-> El indicador es irrelevante en ambos modelos (SHAP 0,045%, permutación
-> 0,016 pp) por una razón más simple: solo el 24,3% de las viviendas que lo
+> El indicador es irrelevante en ambos modelos (SHAP 0,051% y permutación de
+> −0,001 pp, esto es, inutilizarlo mejora marginalmente el modelo) por una razón
+> más simple: solo el 24,3% de las viviendas que lo
 > declaran tienen planta coincidente con la altura catastral.
 >
 > **El caso del apartado 8 pasa a ser `FLOORCLEAN`.** Su contribución recorre de
-> −1,52% (planta intermedia, edificio ≤3 alturas) a +5,50% (última planta,
+> −1,49% (planta intermedia, edificio ≤3 alturas) a +5,38% (última planta,
 > edificio ≥9), con inversión de signo en la planta intermedia. El lineal estima
 > +0,63% no significativo.
 
@@ -1108,19 +1109,20 @@ va dentro del notebook, de modo que sigue siendo reproducible de punta a punta.
 
 | Quintil de renta | Renta mediana | Precio mediano | Ratio | MdAPE | PE10 |
 |---|---|---|---|---|---|
-| 1 | 9.461 € | 136.000 € | 1,014 | 9,01% | 53,3% |
-| 2 | 12.246 € | 184.000 € | 0,997 | 9,46% | 52,5% |
-| 3 | 16.328 € | 284.000 € | 0,994 | 8,37% | 57,3% |
-| 4 | 20.562 € | 413.000 € | 0,995 | 8,32% | 58,0% |
-| 5 | 28.291 € | 682.000 € | 0,993 | 8,86% | 54,6% |
+| 1 | 9.461 € | 136.000 € | 1,010 | 9,07% | 53,5% |
+| 2 | 12.246 € | 184.000 € | 0,996 | 9,30% | 52,4% |
+| 3 | 16.328 € | 284.000 € | 0,993 | 8,43% | 56,8% |
+| 4 | 20.562 € | 413.000 € | 0,996 | 8,35% | 58,8% |
+| 5 | 28.291 € | 682.000 € | 0,994 | 9,04% | 54,8% |
 
-**No hay sesgo por renta.** Recorrido del ratio: **0,021 por renta frente a 0,081
-por precio**. El desvío existente es compresión hacia la media —que opera sobre
+**No hay sesgo por renta.** Recorrido del ratio: **0,017 por renta frente a 0,078
+por precio**, de modo que apenas la quinta parte del desvío es atribuible al
+nivel socioeconómico. El desvío existente es compresión hacia la media —que opera sobre
 el precio— y se diluye al ordenar por renta. La advertencia anotada antes de ver
 las cifras se cumplió, y el contraste renta/precio es lo que permite separarlo.
 
-**Residuo a vigilar:** 1,4% de sobrevaloración en el quintil de renta inferior,
-unos 1.900 € sobre su vivienda mediana. Dirección desfavorable para el negocio.
+**Residuo a vigilar:** 1,0% de sobrevaloración en el quintil de renta inferior,
+unos 1.360 € sobre su vivienda mediana de 136.000 €. Dirección desfavorable para el negocio.
 No justifica corregir el modelo; sí incorporarlo al control periódico.
 
 **Sesgo de la muestra, a declarar.** Renta mediana de las secciones con vivienda
@@ -1177,31 +1179,33 @@ importancia por permutación como segunda medida, porque SHAP mide atribución y
 acierto.
 
 **TreeSHAP en la implementación nativa de XGBoost** (`pred_contribs=True`), no la
-librería `shap`: mismo algoritmo exacto, segundos en lugar de minutos, y una
-dependencia menos. Variante `tree_path_dependent`, sin muestra de fondo, dada la
+librería `shap`: mismo algoritmo exacto, sin dependencia adicional y sin muestra
+de fondo. No es rápido —377 s sobre las 6.284 viviendas de validación, con 887
+árboles de profundidad 9— pero la alternativa lo es menos. Variante `tree_path_dependent`, sin muestra de fondo, dada la
 colinealidad documentada.
 
 ### Resultados del bloque 1 (memoria 7.1)
 
 | Bloque | Atribución SHAP | Δ MdAPE | Variables |
 |---|---|---|---|
-| Vivienda | 56,1% | 30,8 pp | 23 |
-| Geoespacial | 34,9% | 21,1 pp | 7 |
-| Distrito | 4,8% | 3,0 pp | 1 |
-| Catastro | 4,2% | 1,6 pp | 4 |
+| Vivienda | 56,0% | 31,6 pp | 23 |
+| Geoespacial | 34,9% | 21,6 pp | 7 |
+| Distrito | 4,8% | 3,2 pp | 1 |
+| Catastro | 4,3% | 2,0 pp | 4 |
 
-- **Spearman 0,957** entre ambos órdenes. El modelo atribuye sus valoraciones a
+- **Spearman 0,964** entre ambos órdenes. El modelo atribuye sus valoraciones a
   las mismas variables de las que depende para acertar. Argumento de gobernanza,
   y el hallazgo del apartado; la discrepancia que yo esperaba no se produjo.
-- **Las cuatro variables construidas en el notebook 01 aportan 12,7 pp**, frente
-  a 8,4 de las distancias de origen y 3,0 del distrito. Es la cuantificación del
+- **Las cuatro variables construidas en el notebook 01 aportan 13,0 pp**, frente
+  a 8,6 de las distancias de origen y 3,2 del distrito. Es la cuantificación del
   eje diferencial.
-- **El distrito no se hunde** en permutación (sexta posición, 3,02 pp): hay
+- **El distrito no se hunde** en permutación (sexta posición, 3,18 pp): hay
   información administrativa que las coordenadas no reconstruyen. Corrige una
   lectura previa.
 - **Orientaciones confirmadas irrelevantes** por tercera vía independiente.
-- Descienden por redundancia: aire acondicionado (−7), calidad constructiva (−5),
-  jardín (−6, efecto sobre el error indistinguible de cero).
+- Descienden por redundancia: aire acondicionado (−7) y calidad constructiva
+  (−4). El jardín baja solo un puesto, pero su deterioro es de 0,035 pp, esto es
+  indistinguible de cero.
 - **La columna «% del deterioro» no es una descomposición.** Los deltas de
   permutación no son aditivos. Darla como orden de magnitud o no darla.
 
@@ -1210,20 +1214,29 @@ colinealidad documentada.
 Tres casos por criterio calculado, no por elección: mediana dentro del rango
 operativo con error <5%, y percentiles 99 y 1 del ratio.
 
-- **Adelfas (55 m²):** el modelo descuenta 84.484 € por tamaño y recupera
-  34.065 € por contexto de barrio. Es la interacción que el aditivo no puede
+*Los tres casos se eligen por percentil del cociente, de modo que cambian cuando
+cambia el modelo. Los que siguen corresponden a la serie vigente.*
+
+- **Adelfas (55 m²):** el modelo descuenta 84.228 € por tamaño y recupera
+  33.700 € por contexto de barrio. Es la interacción que el aditivo no puede
   representar, y apareció en el primer caso sin buscarla.
-- **Colina (75 m², anunciada a 161.000 €, valorada en 288.295 €):** el reparto es
-  coherente; el barrio tiene ratio mediano 0,993 y error del 6,5%. El anuncio
-  pide 2.147 €/m² donde el barrio está a 3.787. **La explicación permite
-  distinguir error del modelo de precio anunciado atípico.** Es el argumento de
-  negocio más fuerte del apartado 7.
+- **Gaztambide (115 m², anunciada a 312.000 €, valorada en 556.230 €):** el
+  reparto es coherente; el barrio tiene ratio mediano 1,005 y error del 7,48%,
+  por debajo del 8,77% global. El anuncio pide 2.713 €/m² donde el barrio está a
+  4.781. **La explicación permite distinguir error del modelo de precio anunciado
+  atípico.** Es el argumento de negocio más fuerte del apartado 7. Sustituye al
+  caso de Colina, que la serie anterior seleccionaba con el mismo papel.
+- **Chueca-Justicia (45 m², anunciada a 388.000 €, valorada en 246.267 €):** el
+  mismo mecanismo con el signo opuesto. Pide 8.622 €/m² donde el barrio está a
+  6.114, un 41% por encima, y el modelo la infravalora un 36,5%. Permite mostrar
+  que la explicación separa precio atípico de error del modelo en las dos
+  direcciones.
 - El caso de gama alta se eliminó: el reparto era coherente y no ilustraba nada.
 - `descomponer()` es el prototipo de la función que ejecutará la app.
 
 ### Resultados del bloque 3 (memoria 7.3)
 
-Sobre 18 atributos binarios: **signo 94%, correlación 0,870, pendiente 1,69.**
+Sobre 18 atributos binarios: **signo 94%, correlación 0,871, pendiente 1,69.**
 Concuerdan en dirección y orden; el lineal estima magnitudes mayores, lectura
 coherente con los VIF de 8-9 pero no contrastada.
 
@@ -1260,9 +1273,9 @@ modo que el efecto es acotado. Limitación del prototipo, a declarar en el 10.
 `modelos/avm_app.joblib` (10 KB): perfil de localización de 135 barrios calculado
 **sobre entrenamiento**, 18 valores por defecto, correspondencia columna→variable
 para ambos modelos (55 y 66), etiquetas, clasificación por bloque, valor base de
-XGBoost (12,5871 en log, 292.754 €) y rango operativo.
+XGBoost (12,5870 en log, 292.737 €) y rango operativo.
 
-`modelos/resultados_notebook03.joblib` (7 KB): las tablas del análisis, para
+`modelos/resultados_notebook03.joblib` (4 KB): las tablas del análisis, para
 verificar cifras al redactar sin reejecutar.
 
 **Figuras:** `07_importancia_global`, `08_explicacion_individual`,
