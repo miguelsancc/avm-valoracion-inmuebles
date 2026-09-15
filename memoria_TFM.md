@@ -137,13 +137,14 @@ se apoya el enriquecimiento geoespacial del apartado 4.
 La restricción temporal se justifica en el apartado 3.3, por derivarse del
 análisis de la estructura del conjunto. El trimestre seleccionado es el de mayor
 volumen y su representatividad se ha verificado frente al resto del ejercicio:
-las medianas de superficie, número de dormitorios, número de baños, año de
-construcción y distancias a puntos de referencia coinciden con las del conjunto
-anual, el equipamiento declarado se mantiene dentro de tres puntos porcentuales
-y la cobertura espacial alcanza el 92% del territorio cubierto por el año
-completo. La única diferencia apreciable es un precio superior en un 7,2%,
-atribuible a la evolución del mercado y no a un cambio en la composición de la
-muestra.
+las medianas de número de dormitorios, número de baños y año de construcción
+coinciden con las del conjunto anual, la superficie difiere en un 1,2% —84
+frente a 83 metros cuadrados— y las distancias a puntos de referencia en menos
+del 1%; el equipamiento declarado se mantiene dentro de tres puntos y medio
+porcentuales y la cobertura espacial alcanza el 92% del territorio cubierto por
+el año completo. La única diferencia apreciable es el precio, superior en un
+8,3% en importe y en un 6,2% por metro cuadrado, atribuible a la evolución del
+mercado y no a un cambio en la composición de la muestra.
 
 ## 2.2. Variables disponibles y licencia de uso
 

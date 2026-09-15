@@ -18,11 +18,12 @@ comparables entre sí y menor granularidad de barrios (69 y 73 frente a 135).
 **Trimestre: 201812 (cuarto trimestre).** Se selecciona por ser el de mayor
 volumen: 31.418 viviendas frente a 17.622, 12.518 y 14.246 de los anteriores.
 Verificada su representatividad frente al resto del ejercicio: medianas de
-superficie, dormitorios, baños, año de construcción y distancias idénticas;
-equipamiento dentro de 3 puntos porcentuales; cobertura espacial del 92% de las
+dormitorios, baños y año de construcción idénticas; superficie 84 frente a
+83 m² (+1,2%) y distancias por debajo del 1%; equipamiento con una desviación
+máxima de +3,3 pp (aire acondicionado); cobertura espacial del 92% de las
 celdas de 500 m que alcanza el año completo. La única diferencia apreciable es
-el precio (+7,2%), atribuible a la tendencia del mercado y no a un cambio de
-composición.
+el precio: +8,3% en importe y +6,2% en precio unitario, atribuible a la
+tendencia del mercado y no a un cambio de composición.
 
 **Conjunto de trabajo: 31.418 viviendas.**
 
@@ -277,8 +278,12 @@ oficial** (Madrid tiene 131 barrios). Declarado en la memoria.
 `CADCONSTRUCTIONYEAR`, de fuente catastral, está completa. Se prescinde de la
 primera.
 
-*Nota: la cifra del 58,93% que figuraba en versiones anteriores correspondía al
-conjunto anual completo, no al de trabajo.*
+*Nota: el notebook 01 recoge dos cifras, ambas correctas. El 58,93% del
+apartado 1.6 se calcula sobre los 94.815 anuncios del ejercicio completo; el
+56,31%, del apartado 3.3 en adelante, sobre el conjunto de trabajo. La
+diferencia responde al filtro temporal y a la deduplicación, no a la
+recodificación de valores imposibles, que en esta variable afecta a 0
+registros.*
 
 ### `UNITPRICE` es el cociente exacto de la objetivo
 
