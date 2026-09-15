@@ -817,13 +817,16 @@ más influyentes mueve el coeficiente más afectado 0,0139 y ninguno cambia de
 signo. **El extremo de 13 desviaciones típicas no exige tratamiento**: cuestión
 pendiente desde el bloque 3, resuelta con medición.
 
-**Coeficientes.** Ascensor +19%, piscina +12,3%, garaje +7,5%, aire +7,1%. Obra
-usada −23,3% y a reformar −16,2% frente a obra nueva. Estudio −14,6%. Distritos
+**Coeficientes.** Ascensor +19%, piscina +12,3%, garaje +7,5%, aire +7,1%. Obra **a
+reformar** −23,3% y **usada en buen estado** −16,2% frente a obra nueva. Estudio −14,6%. Distritos
 periféricos hasta −45% frente a Centro. Control de signos superado.
 
-**Las cuatro orientaciones son irrelevantes**: coeficientes de 0,2%, p > 0,58, y
-0,09 pp de aporte en CV. Hallazgo contraintuitivo frente a los manuales de
-tasación.
+**Las orientaciones aportan 0,09 pp en CV.** Tres de las cuatro son
+irrelevantes —norte, sur y este, coeficientes de 0,17 a 0,21% con p entre 0,58 y
+0,67—, pero la oeste estima **+1,34% con p = 0,0025**, significativa al 5% y seis
+veces mayor que las otras. No procede por tanto el hallazgo contraintuitivo que
+se anotó frente a los manuales de tasación: lo que el dato sostiene es que el
+efecto conjunto de las cuatro es marginal, no que ninguna tenga efecto.
 
 **`ISINTOPFLOOR` nulo (+0,63%, n.s.) — diagnosticado.** No es absorción por
 terraza (quitarla lo sube solo a +1,22%). El indicador captura dos efectos
