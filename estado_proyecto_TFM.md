@@ -835,7 +835,7 @@ primera), porque ser última planta de un edificio de dos significa edificio baj
 y periférico; a partir de la quinta se invierte (5.280 frente a 3.842 en octava).
 El modelo aditivo los promedia a cero. **Requiere interacción con la altura del
 edificio: material para el apartado 8**, como caso concreto de dónde el lineal
-pierde frente a XGBoost. Apunte aparte: solo el 24,3% de los áticos declarados
+pierde frente a XGBoost. Apunte aparte: solo el 24,6% de los áticos declarados
 tiene planta igual a la altura catastral.
 
 ### Aportación de bloques de variables (MdAPE en CV)
@@ -991,8 +991,9 @@ el estándar.
 >
 > El indicador es irrelevante en ambos modelos (SHAP 0,051% y permutación de
 > −0,001 pp, esto es, inutilizarlo mejora marginalmente el modelo) por una razón
-> más simple: solo el 24,3% de las viviendas que lo
-> declaran tienen planta coincidente con la altura catastral.
+> más simple: de las 130 viviendas de validación que lo declaran, solo el 24,6%
+> tiene planta coincidente con la altura catastral. Medido en la celda del
+> apartado 4 del notebook 03.
 >
 > **El caso del apartado 8 pasa a ser `FLOORCLEAN`.** Su contribución recorre de
 > −1,49% (planta intermedia, edificio ≤3 alturas) a +5,38% (última planta,
@@ -1245,7 +1246,9 @@ coherente con los VIF de 8-9 pero no contrastada.
 - **Descartado por vacío:** la proporción de efectos negativos entre quienes
   declaran el atributo (0,0%–1,7%). El efecto no cambia de signo, solo varía en
   magnitud. El argumento lo sostiene el recorrido, no la inversión.
-- Ascensor: **3,4% a 10,1%** entre percentiles 5 y 95, frente al +19% único.
+- Ascensor: **3,22% a 10,13%** entre percentiles 5 y 95, con mediana de 5,41%,
+  frente al +19,00% único del lineal. El recorrido es de un factor tres en los
+  seis atributos comparables, no solo en este.
 
 ---
 
@@ -1263,10 +1266,16 @@ contradecir la conclusión del apartado 8.
 `avm_madrid.joblib` y `avm_app.joblib`, sin reentrenar.
 
 **Aproximación declarada.** Las variables geoespaciales se toman como mediana del
-barrio. Coeficiente de variación interno: 0,07 (distancia al centro), 0,13
-(Castellana), 0,26 (metro en 1 km y densidad de oferta), **0,41 (distancia al
-metro)**. Las tres inestables aportan menos de 1,5 pp al error en conjunto, de
-modo que el efecto es acotado. Limitación del prototipo, a declarar en el 10.
+barrio. Coeficiente de variación interno, medido sobre entrenamiento: **0,00** en
+los dos agregados de barrio, donde la sustitución es exacta por estar su valor ya
+definido a ese nivel; 0,07 (distancia al centro) y 0,13 (Castellana); y **0,27**
+(metro en 1 km y densidad de oferta) y **0,42** (distancia al metro) en las de
+escala local.
+
+No se cifra una aportación conjunta de esas tres al error: los incrementos por
+permutación no son aditivos, según la cautela recogida más arriba, y sumarlos
+daría 2,79 pp. Individualmente ninguna alcanza el punto y medio porcentual.
+Limitación del prototipo, a declarar en el 10.
 
 ### Artefactos del notebook 03
 
