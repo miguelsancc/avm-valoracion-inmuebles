@@ -467,20 +467,21 @@ diferenciada entre sí.
 | Antigüedad mediana del barrio | Momento de desarrollo urbano de la zona |
 | Superficie mediana del barrio | Tipo de producto predominante |
 
-**Aportación.** Las cuatro variables retenidas reducen en un 16,4% el error de
-un modelo que ya incorpora las tres distancias de origen, del 18,3% al 15,1% de
-error relativo. La magnitud resulta comparable a la aportación de las propias
-distancias de origen, que reducen en un 22,2% el error del modelo basado
-exclusivamente en atributos de la vivienda.
+**Aportación.** Las variables construidas reducen en un 17,1% el error de un
+modelo que ya incorpora las tres distancias de origen, del 18,3% al 15,2% de
+error relativo, y el conjunto de cuatro retenido lo deja en el 15,1%. La
+magnitud no alcanza la aportación de las propias distancias de origen, que
+reducen en un 24,3% el error del modelo basado exclusivamente en atributos de la
+vivienda.
 
 Dos resultados merecen comentario. La superficie mediana del barrio constituye
 la variable de mayor capacidad explicativa del conjunto, superior a la de
 cualquiera de las variables de origen, pese a presentar una correlación de
-apenas 0,198 con la más próxima de aquellas: el tipo de producto predominante en
+apenas 0,199 con la más próxima de aquellas: el tipo de producto predominante en
 la zona aporta información que las medidas de distancia no contienen. Y la
 antigüedad mediana del barrio, cuya elevada correlación con la distancia al
 centro sugería redundancia, resultó necesaria: su supresión eleva el error en un
-1,75%, por recoger una relación con el precio de naturaleza no monótona que las
+2,80%, por recoger una relación con el precio de naturaleza no monótona que las
 medidas de distancia no reproducen.
 
 **Variables excluidas por construcción.** No se incorporan el precio mediano del

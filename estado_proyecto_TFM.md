@@ -474,17 +474,18 @@ restantes no altera el error.
 | `DIST_METRO_2A`, `DIST_METRO_3A` | Correlación 0,947 y 0,902 con la distancia a la primera |
 | `RATIO_METRO_2A1A` | η² exactamente 0,00 |
 | `METRO_EN_500M`, `ANUNCIOS_EN_1000M` | Redundantes con su par del otro radio |
-| `BARRIO_DENSIDAD_KM2` | Correlación 0,903 con `ANUNCIOS_EN_500M` |
+| `BARRIO_DENSIDAD_KM2` | Correlación 0,903 con `ANUNCIOS_EN_500M`. **No se incorpora al conjunto:** se calcula solo para esta comprobación, de modo que las descartadas de entre las nueve evaluadas son cinco |
 
-**Aportación medida:** reducción del **16,4%** del error sobre un modelo que ya
-incorpora las tres distancias de origen (18,3% → 15,1%). Las distancias de origen
-aportan, a su vez, un 22,2% sobre el modelo de atributos de la vivienda.
+**Aportación medida:** reducción del **17,1%** del error sobre un modelo que ya
+incorpora las tres distancias de origen (18,3% → 15,2%); el conjunto de cuatro
+retenido lo deja en el 15,1%. Las distancias de origen aportan, a su vez, un
+24,3% sobre el modelo de atributos de la vivienda.
 
 **Dos resultados destacables.** `BARRIO_AREA_MED` presenta correlación de solo
-0,198 con la variable de origen más próxima: el tipo de producto de la zona es
+0,199 con la variable de origen más próxima: el tipo de producto de la zona es
 información genuinamente nueva. Y `BARRIO_ANTIGUEDAD_MED`, pese a su correlación
 de 0,792 con la distancia al centro, resulta necesaria: su supresión eleva el
-error un 1,75%. La correlación bivariante habría llevado a descartarla por error.
+error un 2,80%. La correlación bivariante habría llevado a descartarla por error.
 
 **Excluidas por construcción:** precio mediano del barrio y retardo espacial del
 precio. Ambos emplean la variable objetivo de las viviendas del entorno → fuga de
