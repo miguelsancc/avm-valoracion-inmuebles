@@ -1024,7 +1024,7 @@ interpretabilidades.
 
 ## Semilla unificada
 
-`SEMILLA = SEED = 2018` gobierna partición, preprocesado, pliegues de validación
+`SEED = 2018` gobierna partición, preprocesado, pliegues de validación
 cruzada, búsqueda de hiperparámetros y estimación de los modelos. Durante el
 desarrollo convivieron dos semillas (2018 en los bloques 0-3, 12345 en los 4-9);
 se unificó y se reejecutó todo el notebook, incluida la búsqueda. Las cifras
