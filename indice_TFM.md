@@ -19,7 +19,7 @@
 
 ## 3. Análisis exploratorio de datos (EDA)
 - 3.1. Análisis descriptivo y distribución de precios
-- 3.2. Análisis por ciudad y por barrio
+- 3.2. Análisis por distrito y barrio
 - 3.3. Detección de valores atípicos y calidad del dato
 
 ## 4. Enriquecimiento geoespacial

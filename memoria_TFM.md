@@ -209,7 +209,7 @@ dado que la permanencia prolongada señala precisamente un precio de salida
 excesivo.
 
 **Acotación del precio unitario.** El precio por metro cuadrado se sitúa entre
-805 y 9.994 euros, sin que ningún anuncio de Madrid alcance los 10.000 euros por
+805 y 9.993 euros, sin que ningún anuncio de Madrid alcance los 10.000 euros por
 metro. La cola superior decrece de forma continua hasta ese valor sin presentar
 acumulación, lo que indica que los registros situados fuera del rango fueron
 excluidos en origen y no reasignados al límite.
@@ -311,7 +311,7 @@ La agregación por distrito reduce ese recorrido a un factor de 3,39, lo que
 revela una heterogeneidad interna apreciable dentro de cada distrito y aconseja
 emplear el barrio como unidad de análisis. En términos cuantitativos, el barrio
 explica el 72,7% de la variación del precio unitario frente al 65,1% del
-distrito, y frente al 14,5% atribuible a la superficie construida.
+distrito, y frente al 14,6% atribuible a la superficie construida.
 
 *[Figura: mapa de coropletas del precio unitario mediano por barrio]*
 
@@ -420,7 +420,7 @@ compraventa. No se elimina ningún registro por esta vía.
 ## 4.1. Fundamento: la localización como driver del precio
 
 El apartado 3.2 estableció que el barrio explica el 72,7% de la variación del
-precio unitario, frente al 14,5% atribuible a la superficie. El conjunto
+precio unitario, frente al 14,6% atribuible a la superficie. El conjunto
 incorpora tres variables de localización —distancia al centro, a la estación de
 metro más próxima y al eje de la Castellana— cuya reconstrucción no aportaría
 información nueva. El enriquecimiento debe generar, por tanto, variables que el

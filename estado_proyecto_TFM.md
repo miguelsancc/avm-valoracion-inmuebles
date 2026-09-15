@@ -219,8 +219,10 @@ distrito como explicativa.
   `DISTANCE_TO_CASTELLANA` (en **kilómetros**)
 - **Otros:** `ASSETID`, `PERIOD`
 
-Naturaleza estadística tras la clasificación: **24 categóricas** (4 etiquetas y
-20 indicadores binarios) y **16 numéricas**, más la geometría.
+Naturaleza estadística tras la clasificación: **23 categóricas** (3 etiquetas
+—`AMENITYID`, `FLATLOCATIONID` y `CADASTRALQUALITYID`— y 20 indicadores
+binarios) y **16 numéricas**, más la geometría. Suman 39 columnas que, con la
+geometría, agotan las 40 del conjunto preparado.
 
 ---
 
@@ -365,7 +367,7 @@ ajustar.
 | Superficie mediana | 82 m² |
 | Precio unitario mediano | 3.565 €/m² |
 
-El precio unitario está acotado en origen entre 805 y 9.994 €/m². La cola decrece
+El precio unitario está acotado en origen entre 805 y 9.993 €/m². La cola decrece
 de forma continua hasta el corte (476, 344, 248, 200, 127 y 75 viviendas en los
 tramos de 500 €/m² entre 7.000 y 10.000), lo que acredita **exclusión en origen
 y no reasignación al límite**.
@@ -403,7 +405,7 @@ que aparenta medir otra cosa acaba midiendo centralidad.**
 |---|---|
 | Barrio (135) | **0,727** |
 | Distrito (21) | 0,651 |
-| Superficie (deciles) | 0,145 |
+| Superficie (deciles) | 0,146 |
 
 - Precio unitario por barrio: de 1.241 (San Cristóbal) a 7.595 €/m² (Recoletos).
   **Factor 6,12.** Por distrito, factor 3,39.
@@ -764,10 +766,18 @@ a la mediana de su zona es marginal.
 **0,49%**), frente a los 6 (0,28%) sobre el conjunto completo. Dos cruzan a la
 baja al estimarse sobre el 80%.
 
-Los nuevos —Arroyo del Fresno y Palomas, 24 viviendas cada uno— son
-urbanizaciones residenciales, no suelo no residencial. **Revisar la frase del
-apartado 3.2 de la memoria** que afirma que todos corresponden a suelo no
-residencial o urbanizaciones de baja densidad.
+*Pendiente de verificar contra la salida del notebook 02.* La anotación previa
+identificaba a Arroyo del Fresno como uno de los dos nuevos, pero ese barrio ya
+figura entre los 6 del conjunto completo con 24 viviendas (celda 119 del
+notebook 01), de modo que no puede ser un recién llegado. Hay que releer la
+salida del 02 para saber cuáles son los dos que cruzan.
+
+**La frase sobre la naturaleza del suelo requiere revisión en dos sitios**, no
+solo en la memoria. La celda 122 del notebook 01 afirma que los seis
+corresponden a suelo mayoritariamente no residencial o a urbanizaciones de baja
+densidad, y de los seis que lista la celda 119 —Arroyo del Fresno, El Pardo, El
+Plantío, Horcajo, Cuatro Vientos y Aeropuerto— al menos Arroyo del Fresno y
+Horcajo son suelo residencial ordinario.
 
 ### Asimetría a declarar en el 6.1
 
