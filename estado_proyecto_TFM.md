@@ -601,20 +601,21 @@ verificada sobre validación.
 
 **Etiquetas de presentación.** Diccionario que traduce `DISTANCE_TO_METRO_2` a
 `Metro: 350-500`, para la lectura de coeficientes e importancias del apartado 7.
-No forma parte del objeto serializado.
+Se incorpora al objeto serializado, de modo que el notebook 03 y la app no
+necesitan redefinirla.
 
 ## Notebook 02 — bloque 4: protocolo de validación y métricas
 
 ### Validación
 
 `StratifiedKFold`, 5 pliegues, estratificación por decil de precio, semilla
-12345. Índices fijados una sola vez en `PLIEGUES`: todas las configuraciones de
+**2018**, conforme a la unificación documentada más abajo. Índices fijados una sola vez en `PLIEGUES`: todas las configuraciones de
 los bloques 6 y 7 se miden sobre los mismos pliegues, requisito para que las
 diferencias observadas respondan al modelo y no a la partición. El conjunto de
 validación (6.284) queda reservado hasta el bloque 8.
 
 Homogeneidad verificada: mediana idéntica en los cinco pliegues (268.000 €) y
-P90 dentro de un rango de 2.800 € sobre 813.000.
+P90 dentro de un rango de 1.999 € sobre 813.000 (812.000 a 813.999).
 
 ### Objetivo en logaritmos — justificación
 
@@ -677,7 +678,8 @@ de σ = 0,15, sin regresividad alguna, el PRB resultó +0,0266 en lugar de 0.
 **Sustituidos por `ratio_por_quintil()`**: mediana del ratio y MdAPE por quintil
 de viviendas, ordenados por una variable ajena al error de la vivienda concreta
 (superficie, o nivel de precio de la zona). Verificado que detecta la
-regresividad del caso 3 y no la inventa en el caso 4 (ratios de 1,006 a 1,009).
+regresividad del caso 3 —ratio de 1,167 en Q1 a 0,861 en Q5— y no la inventa en
+el caso 4, donde los cinco quintiles quedan entre 0,992 y 1,008.
 
 **COD conservado.** Mide dispersión en torno a la mediana del ratio y no en
 torno a 1, lo que separa consistencia de sesgo de nivel: un modelo puede ser
@@ -748,7 +750,8 @@ a la mediana de su zona es marginal.
 ### Hallazgos para el 6.1
 
 - La localización reduce el error un **56,2%** respecto a la referencia global.
-- El salto de distrito a barrio vale un **17%** de reducción (17,76% → 14,75%):
+- El salto de distrito a barrio vale **tres puntos porcentuales** (17,76% →
+  14,75%):
   mide exactamente lo que al modelo se le negó al descartar el barrio como
   predictor. Si el AVM bate el 14,75%, lo hace compensando con enriquecimiento
   geoespacial una desventaja de tres puntos.
@@ -767,11 +770,11 @@ a la mediana de su zona es marginal.
 **0,49%**), frente a los 6 (0,28%) sobre el conjunto completo. Dos cruzan a la
 baja al estimarse sobre el 80%.
 
-*Pendiente de verificar contra la salida del notebook 02.* La anotación previa
-identificaba a Arroyo del Fresno como uno de los dos nuevos, pero ese barrio ya
-figura entre los 6 del conjunto completo con 24 viviendas (celda 119 del
-notebook 01), de modo que no puede ser un recién llegado. Hay que releer la
-salida del 02 para saber cuáles son los dos que cruzan.
+**Resuelto contra la salida del bloque 5.** Los ocho son Aeropuerto (14),
+Arroyo del Fresno (24), Atalaya (27), Cuatro Vientos (4), El Pardo (6), El
+Plantío (13), Horcajo (11) y Palomas (24). Los dos que cruzan son por tanto
+**Atalaya y Palomas**, no Arroyo del Fresno, que ya figuraba entre los seis del
+conjunto completo. La anotación previa escogió los dos de 24 viviendas.
 
 **La frase sobre la naturaleza del suelo requiere revisión en dos sitios**, no
 solo en la memoria. La celda 122 del notebook 01 afirma que los seis
