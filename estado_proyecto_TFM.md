@@ -943,11 +943,12 @@ desviación.
 > instanciaciones del `XGBRegressor`; los `n_jobs=-1` de la validación cruzada y
 > de la búsqueda se conservan, por repartir pliegues sin alterar el resultado.
 >
-> La serie vigente es la de esta tabla. **Pendiente de confirmar con una segunda
-> ejecución bajo `N_HILOS = 4`:** los agregados se han reproducido, pero las
-> cifras por quintil de superficie se movieron hasta 0,003 en el ratio y 0,18 pp
-> en el error, de modo que la estabilidad a nivel de segmento no está acreditada
-> todavía.
+> **Confirmado.** Dos ejecuciones independientes bajo `N_HILOS = 4` dan
+> resultados idénticos hasta el último dígito, incluidas las cifras por quintil
+> de superficie y por decil de precio, que eran las que se movían: los cinco
+> ratios, los cinco errores por quintil, el recorrido de 0,012 y los diez
+> deciles. Con `n_jobs=-1` esas magnitudes variaban hasta 0,003 en el ratio y
+> 0,18 pp en el error. La serie vigente es la de esta tabla y es reproducible.
 
 La diferencia entre ambos modelos no responde a la información disponible, que es
 idéntica, sino a la capacidad de combinarla sin restricción aditiva.
