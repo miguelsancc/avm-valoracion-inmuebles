@@ -361,7 +361,7 @@ identificadores distintos.
 
 El análisis de las repeticiones permitió establecer su naturaleza. Los registros
 que comparten identificador coinciden en la totalidad de las variables
-catastrales, en la planta en el 95,2% de los casos, en el número de dormitorios
+catastrales, en la planta en el 98,9% de los casos, en el número de dormitorios
 en el 98,2% y en el de baños en el 99,1%, con una diferencia de precio del 4,3%
 en mediana. Se trata, por tanto, de varios anuncios de un mismo inmueble dentro
 de un trimestre, resultado de la comercialización simultánea por distintas

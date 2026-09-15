@@ -232,7 +232,7 @@ En Madrid, 94.815 anuncios corresponden a 75.804 identificadores. Las
 repeticiones se producen **íntegramente dentro de un mismo trimestre**.
 
 Corresponden a varios anuncios de la misma vivienda: comparten el 100% de las
-variables catastrales, el 95,2% la planta, el 98,2% los dormitorios y el 99,1%
+variables catastrales, el 98,9% la planta, el 98,2% los dormitorios y el 99,1%
 los baños, con una dispersión de precio del 4,3% en mediana.
 
 ### El identificador no permite seguimiento temporal
@@ -251,7 +251,16 @@ ahí la restricción a un único trimestre.
 
 Separación mediana de 73 m entre anuncios de una misma vivienda (percentil 90:
 98 m), compatible con un desplazamiento de hasta unos 50 m aplicado a **cada
-registro de forma independiente**. Las `DISTANCE_TO_*` presentan valores
+registro de forma independiente**.
+
+**La cola no responde a la perturbación.** 8 grupos superan los 5 km de
+separación en el ejercicio y 5 subsisten en el trimestre, con máximo de 9.976 m:
+son coordenadas erróneas. Los anuncios fuera del término municipal bajan de 94 a
+24 con el filtro temporal, y esos 24 quedan a menos de 254 m de una frontera de
+barrio, de modo que la asignación por proximidad del bloque 4 los resuelve. Tras
+deduplicar, hasta 5 viviendas del conjunto de trabajo pueden conservar una
+coordenada desviada en kilómetros —el 0,016%—, indetectable al caer dentro del
+municipio. Medido en el apartado 2.8 del notebook 01. Las `DISTANCE_TO_*` presentan valores
 distintos dentro de un mismo grupo, lo que acredita que se calcularon **después**
 de perturbar.
 
