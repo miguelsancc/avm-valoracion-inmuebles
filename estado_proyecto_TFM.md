@@ -169,7 +169,9 @@ Total: 189.923 anuncios. Geometría de tipo `Point`, **CRS EPSG:4326**.
 Columnas: `LOCATIONID`, `LOCATIONNAME`, `ZONELEVELID`, `geometry`.
 
 Madrid: suma de áreas 602,14 km², área de la unión 602,13 km². Coherente con los
-604 km² del término municipal. Constituyen una partición sin solapamientos.
+604 km² del término municipal. Partición sin solapamientos apreciables: el
+residuo de 0,01 km² (0,002%) es atribuible a la precisión del trazado de los
+vértices, no a superposición real entre zonas.
 
 ### Puntos de interés — CSV
 
@@ -190,8 +192,12 @@ independientes.
 `properties_by_district.gpkg` (47 filas) — agregado por **distrito** de las tres
 ciudades. La documentación lo describe como el número total de propiedades por
 distrito en 2018. Columnas: `District`, `N_CADASTRE`, `N`, `CITY`, `geometry`.
-Su cociente da una tasa de rotación del mercado. **No utilizado:** granularidad
-demasiado gruesa frente al análisis por barrio.
+Su cociente da una tasa de rotación del mercado, magnitud que aproxima la
+liquidez de la zona y que ninguna otra variable recoge. **No utilizado por
+redundancia:** al estar definida sobre los 21 distritos, es una función
+determinista de `DISTRITO`, cuyo efecto el modelo estima directamente al
+incorporarlo como categórica. Solo sería pertinente si se prescindiera del
+distrito como explicativa.
 
 ---
 
