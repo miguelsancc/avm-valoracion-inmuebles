@@ -37,7 +37,7 @@ marcha, pero el total no se mueve.
 | 7. Interpretabilidad post-hoc | 2,5 | 1.100 | **Redactado — excede el presupuesto** |
 | 8. Discusión del trade-off | 1,0 | 500 | **Redactado — excede el presupuesto** |
 | 9. Análisis de equidad | 1,5 | 650 | **Redactado** |
-| 10. Productivización | 1,5 | 650 | Pendiente |
+| 10. Productivización | 1,5 | 650 | **Redactado** |
 | 11. Conclusiones | 1,5 | 750 | Pendiente |
 | 12. Bibliografía | 0,5 | — | Pendiente |
 | **Total** | **20,5** | | |
@@ -1249,7 +1249,88 @@ conforme a lo expuesto en el apartado 2.3.
 
 # 10. Productivización: aplicación web
 
-*Pendiente.*
+*Redactado.*
+
+El apartado 8 concluyó que el modelo de alto rendimiento resulta preferible con
+una condición: que la explicación acompañe siempre a la valoración. La
+aplicación web materializa esa condición y somete además el procedimiento a una
+prueba que ningún cuaderno de análisis practica, la de funcionar fuera del
+entorno en que fue construido. Está desplegada en
+`https://avm-madrid-2018.streamlit.app/`.
+
+## 10.1. Arquitectura de la solución
+
+La aplicación no entrena: carga dos artefactos serializados por los notebooks,
+compone la entrada, predice y descompone el resultado. Separar el ajuste de la
+explotación constituye un requisito del uso previsto, dado que un procedimiento
+incorporado al control de garantías debe devolver la misma cifra ante la misma
+vivienda con independencia de cuándo se le consulte.
+
+El primero de los artefactos contiene ambos modelos con su preprocesado incluido
+en el mismo objeto. Serializar el pipeline entero y no solo el estimador
+resuelve por construcción el riesgo más frecuente en la productivización, el de
+que la transformación aplicada en explotación difiera de la del entrenamiento:
+la aplicación no reimplementa la imputación ni la tramificación, sino que
+ejecuta los objetos ya ajustados. El segundo reúne el perfil de localización de
+los 135 barrios y las etiquetas con que el resultado se traduce a lenguaje
+legible.
+
+**El formulario pide diez datos y el modelo necesita treinta y cinco.** Se
+preguntan el barrio y las nueve características que figuran en cualquier
+expediente de tasación; las veintiséis restantes se completan con el perfil del
+barrio elegido y con los valores típicos del mercado. La economía tiene un coste
+que la interfaz declara: las variables de localización pasan a referirse a la
+mediana del barrio y no a la vivienda concreta, y seis de los 135 barrios
+carecen de perfil completo.
+
+La explotación impone además una restricción que conviene consignar. El modelo
+se serializa mediante un mecanismo que no constituye un formato de intercambio
+estable entre versiones de la librería, hasta el punto de que el artefacto de
+este trabajo no se deserializa con una versión de scikit-learn posterior a la
+empleada. El entorno de despliegue fija por ello las versiones de forma exacta,
+y el mantenimiento del procedimiento exigiría congelarlo o reserializar el
+artefacto de forma periódica.
+
+## 10.2. Flujo de uso: entrada de una vivienda, estimación y explicación
+
+La sección principal presenta la valoración acompañada del precio unitario
+resultante, del precio unitario mediano del barrio y del número de viviendas con
+que ese barrio contribuyó al entrenamiento. Junto a la cifra, y no en un
+apartado secundario, figura que corresponde al precio de anuncio de diciembre de
+2018.
+
+**La descomposición constituye el resultado y no un complemento.** Se obtiene
+mediante los valores de Shapley descritos en el apartado 7.2 y adopta la forma
+de una cascada que parte de la valoración media del entrenamiento, 292.737
+euros, encadena las ocho contribuciones de mayor magnitud y cierra en la
+valoración. Una sección aparte ofrece la del modelo interpretable, como
+contraste y no como alternativa.
+
+**El diseño inicial atribuía a la diferencia entre ambos modelos un valor de
+señal que la medición no respalda.** La hipótesis era que una discrepancia
+elevada indicaría una vivienda atípica, sobre la cual convendría recomendar
+revisión. Contrastada sobre las 6.284 viviendas de validación, resulta falsa: su
+correlación de rangos con el error de la valoración es de 0,038, y agrupadas las
+viviendas por quintiles de discrepancia el error relativo mediano se mantiene
+entre el 8,50% y el 9,60% mientras la discrepancia se multiplica por catorce. El
+aviso se retiró en consecuencia, por cuanto recomendar la revisión de una
+valoración tan fiable como las demás habría inducido a error a su destinatario.
+
+Sí se conservan tres avisos que la evidencia sostiene: cuando la valoración cae
+fuera del intervalo comprendido entre 120.000 y 900.000 euros, donde la
+proporción de valoraciones dentro del margen del diez por ciento desciende al
+42,8% y al 47,2% frente al 55,2% y el 61,2% de los deciles centrales; cuando el
+barrio aportó menos de treinta viviendas al entrenamiento, lo que afecta a ocho
+de los 135; y cuando su perfil de localización está incompleto. Los tres
+responden al criterio de derivación a tasador en los extremos que declara el
+apartado 1.2.
+
+La aplicación incorpora por último la tabla de rendimiento y las tres
+limitaciones que acotan su alcance —precio de anuncio de 2018, precios de oferta
+y no sustitución de una tasación profesional—, por cuanto puede consultarse sin
+haber leído esta memoria. Su comportamiento se verificó sobre 540 casos que
+combinan los 135 barrios con los extremos de cada rango admitido, comprobando en
+todos ellos que la descomposición reproduce la valoración.
 
 # 11. Conclusiones
 
