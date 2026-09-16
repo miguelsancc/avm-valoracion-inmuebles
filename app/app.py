@@ -38,7 +38,6 @@ VERDE = "#2e7d32"
 ROJO = "#c62828"
 GRIS = "#546e7a"
 N_CASCADA = 8          # contribuciones que se detallan antes del agregado «resto»
-UMBRAL_DISCREPANCIA = 15.0   # % a partir del cual se recomienda revisión
 
 st.set_page_config(
     page_title="Valoración automatizada de vivienda · Madrid",
@@ -96,7 +95,7 @@ def cargar():
             "scikit-learn 1.6.1 y xgboost 3.0.0; el entorno actual tiene "
             f"scikit-learn {sklearn.__version__} y xgboost {xgboost.__version__}. "
             "Fije esas versiones en `requirements.txt`. scikit-learn 1.6.1 "
-            "requiere Python 3.12 o anterior.\n\n"
+            "publica wheels hasta Python 3.13 inclusive.\n\n"
             f"Error original: {type(exc).__name__}: {exc}"
         ) from exc
 
@@ -331,13 +330,17 @@ def tabla_presentable(tabla):
 
 st.sidebar.title("Características de la vivienda")
 
-barrio = st.sidebar.selectbox("Barrio", BARRIOS,
-                              index=BARRIOS.index("Acacias") if "Acacias" in BARRIOS else 0)
+barrio = st.sidebar.selectbox(
+    "Barrio", BARRIOS,
+    index=BARRIOS.index("Acacias") if "Acacias" in BARRIOS else 0,
+    help=APP["metadatos"]["nota_geoespacial"])
 
 superficie = st.sidebar.number_input(
     "Superficie construida (m²)", min_value=20, max_value=950, value=82, step=1)
 dormitorios = st.sidebar.number_input(
-    "Dormitorios", min_value=0, max_value=10, value=3, step=1)
+    "Dormitorios", min_value=0, max_value=10, value=3, step=1,
+    help="A superficie constante, más dormitorios implica estancias menores, "
+         "lo que el mercado penaliza.")
 banos = st.sidebar.number_input(
     "Baños", min_value=1, max_value=8, value=1, step=1)
 planta = st.sidebar.number_input(
@@ -355,9 +358,7 @@ aire = col_b.checkbox("Aire acondicionado", value=False)
 
 st.sidebar.caption(
     "El resto de características se fijan en su valor típico del mercado "
-    "madrileño. Las variables de localización se aproximan por la mediana del "
-    "barrio: la dispersión interna es reducida en las distancias a referencias "
-    "urbanas y apreciable en las de escala local."
+    "madrileño, y la localización se aproxima por la mediana del barrio."
 )
 
 RESPUESTAS = {
@@ -437,13 +438,12 @@ if perfil[GEO].isna().any():
 st.divider()
 
 # ------------------------------------------------------------------ cascada
-st.subheader("De qué se compone la valoración")
-st.markdown(
-    "La descomposición reparte la valoración entre las características de la "
-    "vivienda mediante valores SHAP, que atribuyen a cada una su contribución "
-    "exacta. Parte del valor de referencia del modelo —la valoración media "
-    "sobre las viviendas de entrenamiento— y encadena las ocho contribuciones "
-    "de mayor magnitud hasta cerrar en la valoración."
+st.subheader(
+    "De qué se compone la valoración",
+    help="La descomposición se obtiene por valores SHAP, que reparten la "
+         "valoración entre las características atribuyendo a cada una su "
+         "contribución exacta. El valor de referencia del modelo es la "
+         "valoración media sobre las viviendas de entrenamiento.",
 )
 
 pasos = pasos_cascada(tabla_xgb, base_xgb, valoracion)
@@ -452,15 +452,14 @@ figura = grafico_cascada(pasos, base_xgb, valoracion,
 st.pyplot(figura, use_container_width=True)
 plt.close(figura)
 
-st.caption(
-    "El efecto en porcentaje de cada característica no depende del orden en "
-    "que se consideren, porque la descomposición es aditiva en logaritmos. Su "
-    "traducción a euros sí: se obtiene por acumulación sucesiva en orden "
-    "decreciente de magnitud, que es la convención que emplea esta "
-    "herramienta."
+st.markdown(
+    "**Contribución de las 35 características**",
+    help="El efecto en porcentaje no depende del orden en que se consideren "
+         "las características, porque la descomposición es aditiva en "
+         "logaritmos. Su traducción a euros sí: se obtiene por acumulación "
+         "sucesiva en orden decreciente de magnitud, que es la convención que "
+         "emplea esta herramienta.",
 )
-
-st.markdown("**Contribución de las 35 características**")
 st.dataframe(tabla_presentable(tabla_xgb), use_container_width=True,
              hide_index=True, height=360)
 
@@ -478,23 +477,21 @@ with st.expander("Contraste con el modelo interpretable"):
     uno, dos, tres = st.columns(3)
     uno.metric("Modelo de alto rendimiento", eur(valoracion))
     dos.metric("Modelo interpretable", eur(valoracion_lin))
+    # La discrepancia se informa, pero no se interpreta como señal de
+    # fiabilidad. Medido sobre las 6.284 viviendas de validación, su
+    # correlación de Spearman con el error del modelo es 0,038: el error
+    # relativo mediano se mantiene entre el 8,5 % y el 9,6 % del primer al
+    # quinto quintil de discrepancia, mientras la discrepancia se multiplica
+    # por catorce. Avisar de que una valoración requiere revisión porque los
+    # dos modelos difieren sería engañar al analista.
     tres.metric("Discrepancia", eur(diferencia),
-                f"{'+' if relativa >= 0 else '−'}{es(abs(relativa), 1)} %")
-
-    if abs(relativa) >= UMBRAL_DISCREPANCIA:
-        st.warning(
-            "**Discrepancia elevada entre los dos modelos.** Suele indicar una "
-            "vivienda atípica o una combinación poco frecuente de "
-            "características, sobre la que el modelo aditivo y el de alto "
-            "rendimiento difieren. Aconseja revisión."
-        )
-    else:
-        st.markdown(
-            "Los dos modelos coinciden dentro de un margen razonable. Una "
-            "discrepancia grande indicaría una vivienda atípica o una "
-            "combinación poco frecuente de características, y aconsejaría "
-            "revisión."
-        )
+                f"{'+' if relativa >= 0 else '−'}{es(abs(relativa), 1)} %",
+                help="La discrepancia entre los dos modelos no anticipa el "
+                     "error de la valoración. Sobre las 6.284 viviendas de "
+                     "validación su correlación con el error es de 0,038, y "
+                     "el error relativo mediano apenas se mueve entre el 8,5 "
+                     "% y el 9,6 % aunque la discrepancia se multiplique por "
+                     "catorce.")
 
     st.markdown(
         "El modelo interpretable es una regresión lineal sobre los mismos "
@@ -503,24 +500,28 @@ with st.expander("Contraste con el modelo interpretable"):
         "y la valoración que ofrece esta herramienta es la suya."
     )
 
+    st.markdown(
+        "**Las dos cascadas no son comparables paso a paso**, porque parten de "
+        "bases distintas.",
+        help=(
+            "La del modelo de alto rendimiento arranca en la valoración media "
+            f"del entrenamiento ({eur(base_xgb)}). La del modelo lineal "
+            "arranca en el término independiente de la regresión "
+            f"({eur(base_lin)}), que es la valoración de una vivienda de "
+            "referencia concreta: obra nueva, exterior, en el distrito "
+            "Centro, a menos de 1,5 km del centro, a menos de 1 km de la "
+            "Castellana, a menos de 200 m de una estación de metro, anterior "
+            "a 1955 y con el resto de características en su valor medio. Cada "
+            "contribución mide la separación respecto de esa vivienda, no "
+            "respecto de la media del mercado."
+        ),
+    )
+
     pasos_lin = pasos_cascada(tabla_lin, base_lin, valoracion_lin)
     figura_lin = grafico_cascada(pasos_lin, base_lin, valoracion_lin,
                                  "Vivienda de referencia", "Valoración lineal")
     st.pyplot(figura_lin, use_container_width=True)
     plt.close(figura_lin)
-
-    st.info(
-        "**Las dos cascadas no son comparables paso a paso.** La del modelo de "
-        "alto rendimiento arranca en la valoración media del entrenamiento "
-        f"({eur(base_xgb)}). La del modelo lineal arranca en el término "
-        f"independiente de la regresión ({eur(base_lin)}), que es la valoración "
-        "de una vivienda de referencia concreta: obra nueva, exterior, en el "
-        "distrito Centro, a menos de 1,5 km del centro, a menos de 1 km de la "
-        "Castellana, a menos de 200 m de una estación de metro, anterior a "
-        "1955 y con el resto de características en su valor medio. Cada "
-        "contribución mide la separación respecto de esa vivienda, no respecto "
-        "de la media del mercado."
-    )
 
     st.markdown("**Contribución de las 35 características**")
     st.dataframe(tabla_presentable(tabla_lin), use_container_width=True,
