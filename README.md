@@ -7,7 +7,7 @@ análisis de riesgo de garantías hipotecarias.
 Trabajo Fin de Máster · Máster en Data Science, Big Data e Inteligencia
 Artificial · Universidad Complutense de Madrid.
 
-**Aplicación desplegada:** `<pendiente de desplegar>`
+**Aplicación desplegada:** <https://avm-madrid-2018.streamlit.app/>
 
 ---
 
