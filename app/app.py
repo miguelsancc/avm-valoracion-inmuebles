@@ -1,14 +1,20 @@
-"""Valoración automatizada de vivienda en Madrid.
+"""Valoración explicada de vivienda en Madrid.
 
 Aplicación del apartado 10 del TFM. No entrena nada: carga los artefactos
 serializados por los notebooks 02 y 03, compone la fila de entrada, predice con
 los dos modelos y descompone cada valoración en la contribución de sus
 características.
 
+La interfaz se organiza en una portada y tres secciones, navegables desde la
+barra superior. El formulario vive en la barra lateral y acompaña a todas, de
+modo que un cambio en la vivienda actualiza a la vez la valoración y su
+contraste.
+
 Ejecución local desde la raíz del repositorio:
     streamlit run app/app.py
 """
 
+import html
 import sys
 from pathlib import Path
 
@@ -34,16 +40,100 @@ ARTEFACTOS = RAIZ / "modelos"
 # Constantes de presentación
 # --------------------------------------------------------------------------- #
 
+AZUL = "#1f4e79"       # acento principal: cifras, negritas y encabezados
+FONDO = "#eef3f8"      # fondo de tarjetas y encabezados de tabla
 VERDE = "#2e7d32"
 ROJO = "#c62828"
 GRIS = "#546e7a"
 N_CASCADA = 8          # contribuciones que se detallan antes del agregado «resto»
 
 st.set_page_config(
-    page_title="Valoración automatizada de vivienda · Madrid",
+    page_title="Valoración explicada de vivienda · Madrid",
     page_icon="🏢",
     layout="wide",
 )
+
+# Estilos propios. Streamlit no ofrece tarjetas de indicador con el peso visual
+# que pide un cuadro de mando, ni permite dar formato al encabezado de
+# `st.dataframe`, que se dibuja sobre un lienzo y no responde a CSS.
+st.html(f"""
+<style>
+  /* ---- tarjetas de indicador ---- */
+  .kpi-fila {{ display:flex; gap:.85rem; flex-wrap:wrap; margin:.35rem 0 1.2rem 0; }}
+  .kpi {{ flex:1 1 160px; background:{FONDO}; border-radius:.55rem;
+          padding:1rem .85rem; text-align:center; }}
+  .kpi .cifra {{ font-size:1.95rem; font-weight:700; color:{AZUL};
+                 line-height:1.15; }}
+  .kpi .rotulo {{ font-size:.68rem; font-weight:700; color:#5a6b7b;
+                  text-transform:uppercase; letter-spacing:.05em;
+                  margin-top:.35rem; }}
+  .kpi .apunte {{ font-size:.71rem; color:#8793a0; margin-top:.2rem; }}
+
+  /* ---- cabecera de la portada ---- */
+  .portada {{ text-align:center; padding:1.7rem 0 .6rem 0; }}
+  .portada .regleta {{ width:64px; height:3px; background:{AZUL};
+                       margin:0 auto 1.2rem auto; }}
+  .portada .antetitulo {{ font-size:.76rem; font-weight:700; color:{AZUL};
+                          text-transform:uppercase; letter-spacing:.15em; }}
+  .portada h1 {{ font-size:3.15rem; font-weight:700; margin:.45rem 0 .3rem 0;
+                 line-height:1.1; }}
+  .portada .fecha {{ color:#7a8794; font-size:.98rem; }}
+
+  /* ---- tarjetas de seccion: el recuadro entero es clicable ----
+     `st.page_link` genera un enlace de navegacion de cliente; se estira
+     invisible sobre toda la tarjeta para no recargar la pagina, que
+     reiniciaria el formulario. */
+  div[class*="st-key-tarjeta"] {{
+      position:relative; border-radius:.6rem; cursor:pointer;
+      padding:.85rem 1rem !important; gap:.15rem !important;
+      transition:box-shadow .16s ease, transform .16s ease, border-color .16s ease;
+  }}
+  div[class*="st-key-tarjeta"] .stCaption p,
+  div[class*="st-key-tarjeta"] [data-testid="stCaptionContainer"] p {{
+      margin-bottom:0; line-height:1.35;
+  }}
+  div[class*="st-key-tarjeta"]:hover {{
+      box-shadow:0 6px 18px rgba(31,78,121,.18);
+      transform:translateY(-3px);
+      border-color:{AZUL} !important;
+  }}
+  /* Streamlit envuelve cada elemento en un contenedor `relative` que colapsa
+     a altura cero; mientras lo sea, el enlace absoluto se dimensiona respecto
+     de el y no de la tarjeta. Se neutraliza solo en el que lleva el enlace. */
+  div[class*="st-key-tarjeta"] .stElementContainer:has(.stPageLink),
+  div[class*="st-key-tarjeta"] .stPageLink,
+  div[class*="st-key-tarjeta"] .stPageLink > div {{ position:static !important; }}
+  div[class*="st-key-tarjeta"] a[data-testid="stPageLink-NavLink"] {{
+      position:absolute !important;
+      top:0 !important; right:0 !important; bottom:0 !important; left:0 !important;
+      width:auto !important; height:auto !important;
+      opacity:0; z-index:5;
+  }}
+  .tarjeta-titulo {{ font-size:1.12rem; font-weight:700; color:{AZUL};
+                     margin-bottom:.3rem; }}
+
+  /* ---- tabla de contribuciones ---- */
+  .caja-tabla {{ max-height:390px; overflow-y:auto; border:1px solid #e3e8ee;
+                 border-radius:.45rem; }}
+  .tabla-contrib {{ width:100%; border-collapse:collapse; font-size:.85rem; }}
+  .tabla-contrib thead th {{ background:{FONDO}; font-weight:700; color:{AZUL};
+                             text-align:left; padding:.55rem .65rem;
+                             position:sticky; top:0; z-index:2; }}
+  .tabla-contrib thead th.num {{ text-align:right; }}
+  .tabla-contrib td {{ padding:.36rem .65rem; border-bottom:1px solid #eef1f4; }}
+  .tabla-contrib td.num {{ text-align:right; font-variant-numeric:tabular-nums;
+                           font-weight:600; }}
+  .tabla-contrib tbody tr:hover td {{ background:#f7fafc; }}
+
+  /* ---- negritas del cuerpo en azul oscuro ---- */
+  section[data-testid="stMain"] .stMarkdown strong {{ color:{AZUL}; }}
+
+  /* ---- todos los rotulos del formulario en negrita ---- */
+  section[data-testid="stSidebar"] label[data-testid="stWidgetLabel"] p {{
+      font-weight:700;
+  }}
+</style>
+""")
 
 
 # --------------------------------------------------------------------------- #
@@ -169,6 +259,21 @@ def legible(variable, valor):
     return es(float(valor), 2)
 
 
+def kpis(tarjetas):
+    """Fila de tarjetas de indicador.
+
+    tarjetas: lista de (cifra, rótulo, apunte o None)
+    """
+    piezas = []
+    for cifra, rotulo, apunte in tarjetas:
+        extra = f'<div class="apunte">{html.escape(apunte)}</div>' if apunte else ""
+        piezas.append(
+            f'<div class="kpi"><div class="cifra">{html.escape(cifra)}</div>'
+            f'<div class="rotulo">{html.escape(rotulo)}</div>{extra}</div>'
+        )
+    st.html(f'<div class="kpi-fila">{"".join(piezas)}</div>')
+
+
 # --------------------------------------------------------------------------- #
 # Composición de la entrada y valoración
 # --------------------------------------------------------------------------- #
@@ -265,7 +370,7 @@ def descomponer(X, modelo):
     return tabla, float(np.exp(base)), float(np.exp(log_pred))
 
 
-def pasos_cascada(tabla, base, valoracion):
+def pasos_cascada(tabla):
     """Las N mayores contribuciones más un agregado con el resto."""
     cabeza, cola = tabla.head(N_CASCADA), tabla.tail(len(tabla) - N_CASCADA)
     pasos = [(r["Característica"], r["Efecto"], r["Importe"])
@@ -279,37 +384,41 @@ def pasos_cascada(tabla, base, valoracion):
 
 def grafico_cascada(pasos, base, valoracion, titulo_base, titulo_final):
     """Cascada horizontal: arranca en el valor de referencia del modelo,
-    encadena las contribuciones y cierra en la valoración."""
+    encadena las contribuciones y cierra en la valoración.
+
+    Compacta a propósito: se muestra a tamaño natural, sin estirarse al ancho
+    del contenedor, para que no domine visualmente sobre los indicadores.
+    """
     etiquetas = [titulo_base] + [p[0] for p in pasos] + [titulo_final]
     n = len(etiquetas)
-    fig, ax = plt.subplots(figsize=(9, 0.46 * n + 1.1))
+    fig, ax = plt.subplots(figsize=(5.9, 0.245 * n + 0.6), dpi=115)
 
     acumulado = base
     for i, etiqueta in enumerate(etiquetas):
         y = n - 1 - i
         if i == 0 or i == n - 1:
             valor = base if i == 0 else valoracion
-            ax.barh(y, valor, color=GRIS, height=0.62, zorder=3)
+            ax.barh(y, valor, color=GRIS, height=0.6, zorder=3)
             ax.text(valor, y, f"  {eur(valor)}", va="center", ha="left",
-                    fontsize=9, color=GRIS, fontweight="bold", zorder=4)
+                    fontsize=5.8, color=GRIS, fontweight="bold", zorder=4)
         else:
             _, _, importe = pasos[i - 1]
             inicio = acumulado
             acumulado += importe
-            ax.barh(y, importe, left=inicio, height=0.62, zorder=3,
+            ax.barh(y, importe, left=inicio, height=0.6, zorder=3,
                     color=VERDE if importe >= 0 else ROJO)
             extremo = max(inicio, acumulado)
             ax.text(extremo, y, f"  {'+' if importe >= 0 else '−'}"
                                 f"{es(abs(importe))} €",
-                    va="center", ha="left", fontsize=9,
+                    va="center", ha="left", fontsize=5.8,
                     color=VERDE if importe >= 0 else ROJO, zorder=4)
 
     ax.set_yticks(range(n))
-    ax.set_yticklabels(etiquetas[::-1], fontsize=9.5)
+    ax.set_yticklabels(etiquetas[::-1], fontsize=6.2)
     ax.set_xlim(0, max(base, valoracion, acumulado) * 1.30)
-    ax.set_xlabel("Euros", fontsize=9)
+    ax.set_xlabel("Euros", fontsize=6.2)
     ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _: es(v)))
-    ax.tick_params(axis="x", labelsize=8.5)
+    ax.tick_params(axis="x", labelsize=5.5)
     ax.grid(axis="x", alpha=0.25, zorder=0)
     for lado in ("top", "right", "left"):
         ax.spines[lado].set_visible(False)
@@ -317,15 +426,58 @@ def grafico_cascada(pasos, base, valoracion, titulo_base, titulo_final):
     return fig
 
 
-def tabla_presentable(tabla):
-    salida = tabla[["Característica", "Valor", "Bloque", "Efecto", "Importe"]].copy()
-    salida["Efecto"] = salida["Efecto"].map(lambda v: f"{'+' if v >= 0 else '−'}{es(abs(v), 2)} %")
-    salida["Importe"] = salida["Importe"].map(lambda v: f"{'+' if v >= 0 else '−'}{es(abs(v))} €")
-    return salida
+def tabla_contribuciones(tabla):
+    """Tabla en HTML propio.
+
+    `st.dataframe` dibuja sobre un lienzo y no admite formato en el
+    encabezado, que es lo que aquí se necesita.
+    """
+    filas = []
+    for _, r in tabla.iterrows():
+        signo_e = "+" if r["Efecto"] >= 0 else "−"
+        signo_i = "+" if r["Importe"] >= 0 else "−"
+        color = VERDE if r["Importe"] >= 0 else ROJO
+        filas.append(
+            "<tr>"
+            f"<td>{html.escape(str(r['Característica']))}</td>"
+            f"<td>{html.escape(str(r['Valor']))}</td>"
+            f"<td>{html.escape(str(r['Bloque']))}</td>"
+            f"<td class='num' style='color:{color}'>"
+            f"{signo_e}{es(abs(r['Efecto']), 2)} %</td>"
+            f"<td class='num' style='color:{color}'>"
+            f"{signo_i}{es(abs(r['Importe']))} €</td>"
+            "</tr>"
+        )
+    st.html(
+        '<div class="caja-tabla"><table class="tabla-contrib"><thead><tr>'
+        '<th>Característica</th><th>Valor</th><th>Bloque</th>'
+        '<th class="num">Efecto</th><th class="num">Importe</th>'
+        f'</tr></thead><tbody>{"".join(filas)}</tbody></table></div>'
+    )
+
+
+def mostrar_cascada(tabla, base, valoracion, titulo_base, titulo_final):
+    """Cascada y tabla de detalle, ambas plegadas."""
+    with st.expander("Ver el gráfico de cascada", icon=":material/bar_chart:"):
+        figura = grafico_cascada(pasos_cascada(tabla), base, valoracion,
+                                 titulo_base, titulo_final)
+        st.pyplot(figura, use_container_width=False)
+        plt.close(figura)
+        st.caption(
+            "El efecto en porcentaje de cada característica no depende del "
+            "orden en que se consideren, porque la descomposición es aditiva "
+            "en logaritmos. Su traducción a euros sí: se obtiene por "
+            "acumulación sucesiva en orden decreciente de magnitud, que es la "
+            "convención que emplea esta herramienta."
+        )
+
+    with st.expander("Ver la contribución de las 35 características",
+                     icon=":material/table_rows:"):
+        tabla_contribuciones(tabla)
 
 
 # --------------------------------------------------------------------------- #
-# Formulario
+# Formulario: vive en la barra lateral y acompaña a todas las secciones
 # --------------------------------------------------------------------------- #
 
 st.sidebar.title("Características de la vivienda")
@@ -374,27 +526,95 @@ RESPUESTAS = {
 }
 
 X = componer(barrio, RESPUESTAS)
-perfil = PERFIL.loc[barrio]
+PERFIL_BARRIO = PERFIL.loc[barrio]
+TABLA_XGB, BASE_XGB, VALORACION = descomponer(X, "xgboost")
 
 
 # --------------------------------------------------------------------------- #
-# Resultado principal
+# Secciones
 # --------------------------------------------------------------------------- #
 
-st.title("Valoración automatizada de vivienda")
-st.caption(
-    "Herramienta de contraste para análisis de riesgo de garantías "
-    "hipotecarias. Madrid, cuarto trimestre de 2018."
-)
+def _tarjeta_seccion(columna, clave, titulo, descripcion):
+    """Tarjeta de acceso. El enlace se estira invisible sobre todo el recuadro,
+    de modo que basta con pulsar en cualquier punto."""
+    with columna.container(border=True, height=124, key=f"tarjeta_{clave}"):
+        st.html(f'<div class="tarjeta-titulo">{html.escape(titulo)}</div>')
+        st.caption(descripcion)
+        st.page_link(PAGINAS[clave], label=titulo)
 
-tabla_xgb, base_xgb, valoracion = descomponer(X, "xgboost")
-unitario = valoracion / superficie
-referencia = float(perfil["precio_m2_mediano"])
 
-izq, der = st.columns([1.15, 1])
+def portada():
+    meta = ART["metadatos"]
+    metricas = ART["metricas"]["XGBoost"]
 
-with izq:
-    st.metric("Valoración estimada", eur(valoracion))
+    st.html(
+        '<div class="portada">'
+        '<div class="regleta"></div>'
+        '<div class="antetitulo">Modelo de tasación</div>'
+        '<h1>Valoración explicada de vivienda</h1>'
+        f'<div class="fecha">{html.escape(meta["ambito"])}</div>'
+        '</div>'
+    )
+
+    kpis([
+        (f"{es(metricas['MdAPE (%)'], 2)} %", "Error relativo mediano",
+         "La mitad se desvía menos de esa cifra (MdAPE)"),
+        (f"{es(metricas['PE10 (%)'], 1)} %", "Valoraciones dentro del ±10 %",
+         "del precio observado (PE10)"),
+        (f"{es(metricas['PE20 (%)'], 1)} %", "Valoraciones dentro del ±20 %",
+         "del precio observado (PE20)"),
+        (es(metricas["COD"], 2), "Coeficiente de dispersión",
+         "Umbral IAAO de consistencia: 15"),
+        (es(meta["n_validacion"]), "Viviendas de validación",
+         "ajenas por completo al ajuste"),
+    ])
+
+    st.markdown(
+        "Herramienta de contraste para el análisis de riesgo de garantías "
+        "hipotecarias. Estima el precio de anuncio de una vivienda en Madrid a "
+        "partir de diez características y descompone cada valoración en la "
+        "contribución exacta de cada una, de modo que una discrepancia frente "
+        "a una tasación recibida pueda atribuirse a un factor concreto."
+    )
+
+    st.divider()
+
+    uno, dos, tres = st.columns(3)
+    _tarjeta_seccion(uno, "valoracion", "Valoración estimada",
+                     "La valoración del modelo y su descomposición "
+                     "característica a característica.")
+    _tarjeta_seccion(dos, "contraste", "Contraste con el modelo interpretable",
+                     "La valoración de la regresión lineal y la diferencia "
+                     "frente al modelo principal.")
+    _tarjeta_seccion(tres, "modelo", "Sobre el modelo",
+                     "Rendimiento sobre el conjunto de validación y "
+                     "limitaciones de alcance.")
+
+    st.caption(
+        "Los indicadores corresponden al modelo de alto rendimiento medido "
+        f"sobre {es(meta['n_validacion'])} viviendas que no intervinieron en "
+        "el ajuste. La valoración estima el precio de anuncio a diciembre de "
+        "2018 y no sustituye a una tasación profesional."
+    )
+
+
+def pagina_valoracion():
+    st.title("Valoración estimada")
+
+    unitario = VALORACION / superficie
+    referencia = float(PERFIL_BARRIO["precio_m2_mediano"])
+    desvio = (unitario / referencia - 1) * 100
+
+    kpis([
+        (eur(VALORACION), "Valoración estimada", "Precio de anuncio, dic. 2018"),
+        (f"{es(unitario)} €", "Precio por metro cuadrado",
+         f"sobre {es(superficie)} m² construidos"),
+        (f"{es(referencia)} €", "Mediana del barrio",
+         f"{'+' if desvio >= 0 else '−'}{es(abs(desvio), 1)} % respecto de ella"),
+        (es(int(PERFIL_BARRIO["n_entrenamiento"])), "Muestra del barrio",
+         f"{barrio} · distrito {PERFIL_BARRIO['DISTRITO']}"),
+    ])
+
     st.markdown(
         "**Precio de anuncio a diciembre de 2018.** No es el valor de mercado "
         "actual: el modelo se calibró sobre anuncios del cuarto trimestre de "
@@ -402,81 +622,66 @@ with izq:
         "desde entonces."
     )
 
-with der:
+    if not MINIMO <= VALORACION <= MAXIMO:
+        st.warning(
+            f"**La valoración queda fuera del rango operativo del modelo** "
+            f"({eur(MINIMO)} – {eur(MAXIMO)}). Fuera de esa banda el modelo "
+            f"pierde fiabilidad: la proporción de valoraciones dentro del 10 % "
+            f"cae al 42,8 % y al 47,2 % en los deciles extremos de precio, "
+            f"frente al 55-61 % de los centrales. Esta valoración requiere "
+            f"revisión profesional."
+        )
+
+    if int(PERFIL_BARRIO["n_entrenamiento"]) < 30:
+        st.info(
+            f"**Barrio con muestra reducida.** {barrio} aporta solo "
+            f"{es(int(PERFIL_BARRIO['n_entrenamiento']))} viviendas al "
+            f"entrenamiento, de modo que su perfil de localización está peor "
+            f"estimado que el de un barrio con varios centenares. Conviene "
+            f"contrastar el resultado."
+        )
+    if PERFIL_BARRIO[GEO].isna().any():
+        ausentes = [ETIQUETA[c] for c in GEO if pd.isna(PERFIL_BARRIO[c])]
+        st.info(
+            f"**Perfil de barrio incompleto.** En {barrio} no hay valor propio "
+            f"para {' ni '.join(ausentes).lower()}; el modelo las sustituye "
+            f"por la mediana del conjunto de Madrid."
+        )
+
+    st.divider()
+
+    st.subheader(
+        "De qué se compone la valoración",
+        help="La descomposición se obtiene por valores SHAP, que reparten la "
+             "valoración entre las características atribuyendo a cada una su "
+             "contribución exacta. El valor de referencia del modelo es la "
+             "valoración media sobre las viviendas de entrenamiento.",
+    )
     st.markdown(
-        f"**{es(unitario)} €/m²** sobre {es(superficie)} m² construidos  \n"
-        f"Mediana del barrio: **{es(referencia)} €/m²** "
-        f"({'+' if unitario >= referencia else '−'}"
-        f"{es(abs(unitario / referencia - 1) * 100, 1)} % respecto de ella)  \n"
-        f"{barrio} · distrito {perfil['DISTRITO']} · "
-        f"{es(int(perfil['n_entrenamiento']))} viviendas en el entrenamiento"
+        f"La cascada parte del valor de referencia del modelo, "
+        f"**{eur(BASE_XGB)}**, encadena las ocho contribuciones de mayor "
+        f"magnitud y cierra en la valoración."
     )
+    mostrar_cascada(TABLA_XGB, BASE_XGB, VALORACION,
+                    "Valor de referencia del modelo", "Valoración")
 
-if not MINIMO <= valoracion <= MAXIMO:
-    st.warning(
-        f"**La valoración queda fuera del rango operativo del modelo** "
-        f"({eur(MINIMO)} – {eur(MAXIMO)}). Fuera de esa banda el modelo pierde "
-        f"fiabilidad: el error es sensiblemente mayor en los deciles extremos "
-        f"de precio. Esta valoración requiere revisión profesional."
-    )
 
-if int(perfil["n_entrenamiento"]) < 30:
-    st.info(
-        f"**Barrio con muestra reducida.** {barrio} aporta solo "
-        f"{es(int(perfil['n_entrenamiento']))} viviendas al entrenamiento, de "
-        f"modo que su perfil de localización está peor estimado que el de un "
-        f"barrio con varios centenares. Conviene contrastar el resultado."
-    )
-if perfil[GEO].isna().any():
-    ausentes = [ETIQUETA[c] for c in GEO if pd.isna(perfil[c])]
-    st.info(
-        f"**Perfil de barrio incompleto.** En {barrio} no hay valor propio para "
-        f"{' ni '.join(ausentes).lower()}; el modelo las sustituye por la "
-        f"mediana del conjunto de Madrid."
-    )
+def pagina_contraste():
+    st.title("Contraste con el modelo interpretable")
 
-st.divider()
-
-# ------------------------------------------------------------------ cascada
-st.subheader(
-    "De qué se compone la valoración",
-    help="La descomposición se obtiene por valores SHAP, que reparten la "
-         "valoración entre las características atribuyendo a cada una su "
-         "contribución exacta. El valor de referencia del modelo es la "
-         "valoración media sobre las viviendas de entrenamiento.",
-)
-
-pasos = pasos_cascada(tabla_xgb, base_xgb, valoracion)
-figura = grafico_cascada(pasos, base_xgb, valoracion,
-                         "Valor de referencia del modelo", "Valoración")
-st.pyplot(figura, use_container_width=True)
-plt.close(figura)
-
-st.markdown(
-    "**Contribución de las 35 características**",
-    help="El efecto en porcentaje no depende del orden en que se consideren "
-         "las características, porque la descomposición es aditiva en "
-         "logaritmos. Su traducción a euros sí: se obtiene por acumulación "
-         "sucesiva en orden decreciente de magnitud, que es la convención que "
-         "emplea esta herramienta.",
-)
-st.dataframe(tabla_presentable(tabla_xgb), use_container_width=True,
-             hide_index=True, height=360)
-
-st.divider()
-
-# --------------------------------------------------------------------------- #
-# Panel de contraste
-# --------------------------------------------------------------------------- #
-
-with st.expander("Contraste con el modelo interpretable"):
     tabla_lin, base_lin, valoracion_lin = descomponer(X, "lineal")
-    diferencia = valoracion - valoracion_lin
+    diferencia = VALORACION - valoracion_lin
     relativa = diferencia / valoracion_lin * 100
 
-    uno, dos, tres = st.columns(3)
-    uno.metric("Modelo de alto rendimiento", eur(valoracion))
-    dos.metric("Modelo interpretable", eur(valoracion_lin))
+    kpis([
+        (eur(VALORACION), "Modelo de alto rendimiento", "XGBoost"),
+        (eur(valoracion_lin), "Modelo interpretable", "Regresión lineal (OLS)"),
+        (f"{'+' if diferencia >= 0 else '−'}{es(abs(diferencia))} €",
+         "Discrepancia entre ambos",
+         f"{'+' if relativa >= 0 else '−'}{es(abs(relativa), 1)} % "
+         f"sobre el interpretable"),
+    ])
+
     # La discrepancia se informa, pero no se interpreta como señal de
     # fiabilidad. Medido sobre las 6.284 viviendas de validación, su
     # correlación de Spearman con el error del modelo es 0,038: el error
@@ -484,15 +689,15 @@ with st.expander("Contraste con el modelo interpretable"):
     # quinto quintil de discrepancia, mientras la discrepancia se multiplica
     # por catorce. Avisar de que una valoración requiere revisión porque los
     # dos modelos difieren sería engañar al analista.
-    tres.metric("Discrepancia", eur(diferencia),
-                f"{'+' if relativa >= 0 else '−'}{es(abs(relativa), 1)} %",
-                help="La discrepancia entre los dos modelos no anticipa el "
-                     "error de la valoración. Sobre las 6.284 viviendas de "
-                     "validación su correlación con el error es de 0,038, y "
-                     "el error relativo mediano apenas se mueve entre el 8,5 "
-                     "% y el 9,6 % aunque la discrepancia se multiplique por "
-                     "catorce.")
-
+    st.markdown(
+        "La discrepancia entre los dos modelos **no anticipa el error de la "
+        "valoración**.",
+        help="Sobre las 6.284 viviendas de validación su correlación con el "
+             "error es de 0,038, y el error relativo mediano apenas se mueve "
+             "entre el 8,5 % y el 9,6 % aunque la discrepancia se multiplique "
+             "por catorce. Por eso esta sección informa de la diferencia pero "
+             "no recomienda revisión a partir de ella.",
+    )
     st.markdown(
         "El modelo interpretable es una regresión lineal sobre los mismos "
         "datos. Se muestra como contraste, no como alternativa: el apartado 8 "
@@ -500,13 +705,16 @@ with st.expander("Contraste con el modelo interpretable"):
         "y la valoración que ofrece esta herramienta es la suya."
     )
 
+    st.divider()
+
+    st.subheader("De qué se compone la valoración lineal")
     st.markdown(
         "**Las dos cascadas no son comparables paso a paso**, porque parten de "
         "bases distintas.",
         help=(
             "La del modelo de alto rendimiento arranca en la valoración media "
-            f"del entrenamiento ({eur(base_xgb)}). La del modelo lineal "
-            "arranca en el término independiente de la regresión "
+            f"del entrenamiento ({eur(BASE_XGB)}). La del modelo lineal "
+            f"arranca en el término independiente de la regresión "
             f"({eur(base_lin)}), que es la valoración de una vivienda de "
             "referencia concreta: obra nueva, exterior, en el distrito "
             "Centro, a menos de 1,5 km del centro, a menos de 1 km de la "
@@ -516,24 +724,13 @@ with st.expander("Contraste con el modelo interpretable"):
             "respecto de la media del mercado."
         ),
     )
+    mostrar_cascada(tabla_lin, base_lin, valoracion_lin,
+                    "Vivienda de referencia", "Valoración lineal")
 
-    pasos_lin = pasos_cascada(tabla_lin, base_lin, valoracion_lin)
-    figura_lin = grafico_cascada(pasos_lin, base_lin, valoracion_lin,
-                                 "Vivienda de referencia", "Valoración lineal")
-    st.pyplot(figura_lin, use_container_width=True)
-    plt.close(figura_lin)
 
-    st.markdown("**Contribución de las 35 características**")
-    st.dataframe(tabla_presentable(tabla_lin), use_container_width=True,
-                 hide_index=True, height=360)
+def pagina_modelo():
+    st.title("Sobre el modelo")
 
-st.divider()
-
-# --------------------------------------------------------------------------- #
-# Sobre el modelo
-# --------------------------------------------------------------------------- #
-
-with st.expander("Sobre el modelo"):
     meta = ART["metadatos"]
     st.markdown(
         f"Ámbito: **{meta['ambito']}**. Modelo calibrado sobre "
@@ -542,7 +739,7 @@ with st.expander("Sobre el modelo"):
         f"La estimación es la **{meta['estimacion']}**."
     )
 
-    st.markdown("**Rendimiento sobre las viviendas de validación**")
+    st.subheader("Rendimiento sobre las viviendas de validación")
     NOMBRES = {
         "Ref. barrio (135)": "Superficie × precio del barrio",
         "Modelo lineal (OLS)": "Modelo interpretable (OLS)",
@@ -551,24 +748,32 @@ with st.expander("Sobre el modelo"):
     filas = []
     for clave in ("Ref. barrio (135)", "Modelo lineal (OLS)", "XGBoost"):
         m = ART["metricas"][clave]
-        filas.append({
-            "Procedimiento": NOMBRES[clave],
-            "MdAPE": f"{es(m['MdAPE (%)'], 2)} %",
-            "PE10": f"{es(m['PE10 (%)'], 1)} %",
-            "PE20": f"{es(m['PE20 (%)'], 1)} %",
-            "COD": es(m["COD"], 2),
-        })
-    st.dataframe(pd.DataFrame(filas), use_container_width=True, hide_index=True)
+        filas.append(
+            "<tr>"
+            f"<td>{NOMBRES[clave]}</td>"
+            f"<td class='num'>{es(m['MdAPE (%)'], 2)} %</td>"
+            f"<td class='num'>{es(m['PE10 (%)'], 1)} %</td>"
+            f"<td class='num'>{es(m['PE20 (%)'], 1)} %</td>"
+            f"<td class='num'>{es(m['COD'], 2)}</td>"
+            "</tr>"
+        )
+    st.html(
+        '<table class="tabla-contrib"><thead><tr><th>Procedimiento</th>'
+        '<th class="num">MdAPE</th><th class="num">PE10</th>'
+        '<th class="num">PE20</th><th class="num">COD</th></tr></thead>'
+        f'<tbody>{"".join(filas)}</tbody></table>'
+    )
 
     st.caption(
         "MdAPE: error relativo mediano. PE10 y PE20: proporción de "
-        "valoraciones que se desvían menos de un 10 % y de un 20 % del precio "
-        "observado. COD: coeficiente de dispersión; el estándar IAAO sitúa el "
+        "valoraciones comprendidas dentro de un margen del 10 % y del 20 % "
+        "respecto del precio observado. "
+        "COD: coeficiente de dispersión; el estándar IAAO sitúa el "
         "umbral de consistencia en 15. El modelo de alto rendimiento es el "
         "único de los tres que lo alcanza."
     )
 
-    st.markdown("**Limitaciones**")
+    st.subheader("Limitaciones")
     st.markdown(
         "**Alcance temporal.** El modelo se calibró sobre "
         f"{es(meta['n_entrenamiento'] + meta['n_validacion'])} viviendas "
@@ -589,3 +794,21 @@ with st.expander("Sobre el modelo"):
         "**No sustituye a una tasación profesional** conforme a la normativa "
         "aplicable."
     )
+
+
+# --------------------------------------------------------------------------- #
+# Navegación
+# --------------------------------------------------------------------------- #
+
+PAGINAS = {
+    "portada": st.Page(portada, title="Portada", icon=":material/home:",
+                       url_path="portada", default=True),
+    "valoracion": st.Page(pagina_valoracion, title="Valoración estimada",
+                          icon=":material/euro:", url_path="valoracion"),
+    "contraste": st.Page(pagina_contraste, title="Contraste",
+                         icon=":material/compare_arrows:", url_path="contraste"),
+    "modelo": st.Page(pagina_modelo, title="Sobre el modelo",
+                      icon=":material/info:", url_path="modelo"),
+}
+
+st.navigation(list(PAGINAS.values()), position="top").run()
