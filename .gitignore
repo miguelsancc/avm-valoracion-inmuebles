@@ -14,5 +14,10 @@ venv/
 # Checkpoints de Jupyter
 .ipynb_checkpoints/
 
-# Configuracion local de Streamlit (puede contener secretos)
+# Configuracion local de Streamlit. `config.toml` si se versiona: fija el tema
+# claro de la aplicacion. `secrets.toml` no, porque contendria credenciales.
 .streamlit/secrets.toml
+
+# Configuracion local de Claude Code. `launch.json` guarda la ruta absoluta del
+# interprete de esta maquina y no significa nada en otra.
+.claude/
