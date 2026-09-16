@@ -1,0 +1,35 @@
+# Dependencias de la aplicacion del apartado 10.
+#
+# Las versiones estan fijadas, no acotadas, porque la aplicacion no entrena
+# nada: deserializa dos pipelines guardados con joblib. Un pickle de
+# scikit-learn no es un formato de intercambio estable entre versiones, de modo
+# que la version de la libreria forma parte del artefacto tanto como el fichero.
+#
+# Comprobado: con scikit-learn 1.7.2 la carga falla con
+#   AttributeError: module 'sklearn.compose._column_transformer'
+#   has no attribute '_RemainderColsList'
+# porque esa clase interna, que el ColumnTransformer serializado referencia,
+# desaparecio en la 1.7.
+#
+# IMPORTANTE PARA EL DESPLIEGUE. scikit-learn 1.6.1 publica wheels hasta
+# Python 3.13 inclusive; en 3.14 no hay y la instalacion falla. Streamlit
+# Community Cloud usa 3.12 por defecto, que sirve, pero conviene fijarlo de
+# forma explicita en "Advanced settings" al desplegar para que una subida
+# futura del valor por defecto no rompa la aplicacion.
+
+# --- deserializacion de los modelos: versiones exactas, no negociables -------
+scikit-learn==1.6.1
+xgboost==3.0.0
+numpy==2.1.3
+pandas==2.2.3
+joblib==1.6.0
+
+# --- interfaz y graficos ----------------------------------------------------
+streamlit==1.64.0
+matplotlib==3.11.2
+
+# No se incluyen `shap` ni `geopandas`. Los valores SHAP se obtienen de la
+# implementacion nativa del booster de XGBoost, que ejecuta el mismo algoritmo,
+# y la aplicacion no dibuja mapas: las variables geoespaciales llegan ya
+# resueltas dentro de `perfil_barrio`. Ambas son dependencias pesadas que
+# alargarian el despliegue sin aportar nada.
