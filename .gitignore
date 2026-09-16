@@ -1,0 +1,18 @@
+# Datos de partida. Quedan fuera del repositorio: el shapefile nacional de
+# seccion censal pesa 105 MB, por encima del limite de GitHub. El README
+# documenta que hay que descargar y donde colocarlo.
+data/
+
+# Bytecode y cachés de Python
+__pycache__/
+*.py[cod]
+
+# Entornos virtuales locales
+.venv/
+venv/
+
+# Checkpoints de Jupyter
+.ipynb_checkpoints/
+
+# Configuracion local de Streamlit (puede contener secretos)
+.streamlit/secrets.toml
