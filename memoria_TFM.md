@@ -867,18 +867,18 @@ interpretable respondió a criterios establecidos con anterioridad.
 | Superficie y precio del distrito | 17,76% | 30,1% | 54,9% | 22,85 |
 | Superficie y precio del barrio | 14,75% | 35,4% | 63,2% | 19,89 |
 | Modelo interpretable | 14,11% | 37,1% | 66,0% | 19,32 |
-| **Modelo de alto rendimiento** | **8,83%** | **55,1%** | **82,2%** | **12,91** |
+| **Modelo de alto rendimiento** | **8,77%** | **55,3%** | **82,2%** | **12,93** |
 
 El modelo de alto rendimiento reduce el error del procedimiento de referencia en
-un 40,1%, frente al 4,3% que alcanza el modelo interpretable. Sobre la vivienda
-mediana del conjunto, la desviación esperada disminuye de 39.530 a 23.664 euros.
+un 40,5%, frente al 4,3% que alcanza el modelo interpretable. Sobre la vivienda
+mediana del conjunto, la desviación esperada disminuye de 39.530 a 23.504 euros.
 Es asimismo el único de los cinco procedimientos cuyo coeficiente de dispersión
 se sitúa por debajo del valor de quince que el estándar del sector considera
 admisible, y el único que elimina el sesgo sistemático por tamaño.
 
 La correspondencia entre las estimaciones obtenidas por validación cruzada y las
 obtenidas sobre el conjunto reservado —14,04% frente a 14,11% en el modelo
-interpretable, 8,97% frente a 8,83% en el de alto rendimiento— verifica que el
+interpretable, 8,97% frente a 8,77% en el de alto rendimiento— verifica que el
 protocolo de validación no produjo estimaciones optimistas.
 
 Conviene precisar que la comparación no favorece al modelo. El procedimiento de
@@ -1092,12 +1092,13 @@ del mismo modelo.
 El trabajo ha estimado dos modelos sobre la misma información, la misma partición
 y el mismo preprocesado, y ambos alcanzan resultados que difieren de forma
 sustancial. El modelo interpretable sitúa el error relativo mediano en el 14,11%
-y el modelo de alto rendimiento en el 8,83%. La proporción de valoraciones que se
-desvían menos de un 10% del precio observado pasa del 37,1% al 55,1%. El
-coeficiente de dispersión desciende de 19,32 a 12,91, de modo que únicamente el
+y el modelo de alto rendimiento en el 8,77%. La proporción de valoraciones
+comprendidas dentro de un margen del 10% respecto del precio observado pasa del
+37,1% al 55,3%. El
+coeficiente de dispersión desciende de 19,32 a 12,93, de modo que únicamente el
 segundo alcanza el valor de quince que el estándar del sector considera
 admisible. Sobre la vivienda mediana del conjunto, 268.000 euros, la desviación
-esperada disminuye de 37.800 a 23.664 euros.
+esperada disminuye de 37.800 a 23.504 euros.
 
 **El origen de esa diferencia no es informativo sino estructural.** Ambos modelos
 reciben las mismas treinta y cinco variables. Lo que los separa es que el modelo

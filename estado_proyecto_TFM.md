@@ -937,18 +937,39 @@ desviación.
 > `n_jobs=-1` y `tree_method="hist"`, y el orden de reducción de los histogramas
 > depende del número de hilos, que varía con la máquina que asigne Colab.
 >
-> Las dos series observadas fueron 8,83 / 55,1 / 12,91 / 0,9987 y
-> 8,77 / 55,3 / 12,93 / 0,9974. El modelo lineal, determinista, reprodujo todas
-> sus cifras en las dos ocasiones. Se fija `N_HILOS = 4` en las dos
-> instanciaciones del `XGBRegressor`; los `n_jobs=-1` de la validación cruzada y
-> de la búsqueda se conservan, por repartir pliegues sin alterar el resultado.
+> Las dos series observadas, en el orden MdAPE / PE10 / COD / mediana ratio:
+>
+> | Serie | Cifras | Estado |
+> |---|---|---|
+> | **A** | 8,83 / 55,1 / 12,91 / 0,9987 | **Caducada. No usar.** Salió con `n_jobs=-1`, de modo que depende de la máquina que Colab asignara y no es reproducible. |
+> | **B** | **8,77 / 55,3 / 12,93 / 0,9974** | **Vigente.** Es la que contiene `avm_madrid.joblib` y la que reproduce `N_HILOS = 4`. |
+>
+> **Regla de desempate: manda el artefacto.** Ante cualquier duda, la cifra
+> buena es la que devuelve `art["metricas"]["XGBoost"]`, no la que esté escrita
+> en un documento. Los dos motivos convergen: el artefacto es la fuente de
+> verdad y contiene la B, y la B es la única reproducible. En un trabajo que se
+> evalúa por reproducibilidad no cabe publicar la cifra que no se puede
+> reproducir.
+>
+> El modelo lineal, determinista, reprodujo todas sus cifras en las dos
+> ocasiones. Se fija `N_HILOS = 4` en las dos instanciaciones del
+> `XGBRegressor`; los `n_jobs=-1` de la validación cruzada y de la búsqueda se
+> conservan, por repartir pliegues sin alterar el resultado.
 >
 > **Confirmado.** Dos ejecuciones independientes bajo `N_HILOS = 4` dan
 > resultados idénticos hasta el último dígito, incluidas las cifras por quintil
 > de superficie y por decil de precio, que eran las que se movían: los cinco
 > ratios, los cinco errores por quintil, el recorrido de 0,012 y los diez
 > deciles. Con `n_jobs=-1` esas magnitudes variaban hasta 0,003 en el ratio y
-> 0,18 pp en el error. La serie vigente es la de esta tabla y es reproducible.
+> 0,18 pp en el error. La serie vigente es la B, que es la de la tabla de
+> arriba, y es reproducible.
+>
+> **Recaída registrada.** La serie A siguió viva en la memoria hasta la
+> redacción del apartado 10: el apartado 8 arrastraba 8,83 / 55,1 / 12,91 y la
+> reducción del 40,1% mientras el 7.3 ya citaba el 8,77%, de modo que el
+> documento se contradecía consigo mismo. Se corrigió contra el artefacto. Es el
+> motivo de que esta entrada etiquete las series de forma explícita en lugar de
+> enumerarlas.
 
 La diferencia entre ambos modelos no responde a la información disponible, que es
 idéntica, sino a la capacidad de combinarla sin restricción aditiva.
